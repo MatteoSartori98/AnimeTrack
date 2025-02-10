@@ -1,0 +1,14 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+#root {
+  background-image: url("https://cdn.animesaturn.cx/static/images/general/HitormiAS.png");
+  background-size: 380px;
+  background-position: bottom right;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  z-index: 0;
+}

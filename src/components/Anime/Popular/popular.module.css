@@ -1,0 +1,77 @@
+.container {
+  max-width: 1140px;
+  margin: 10px auto;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 4px;
+  background-color: #1c2125;
+}
+
+h2 {
+  font-size: 18px;
+  text-align: center;
+  padding: 10px 0;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+}
+
+.row {
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+.card {
+  display: flex;
+  width: 368px;
+  height: 206px;
+  margin: 4px 4px 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+.cardBody {
+  display: flex;
+  justify-content: end;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.navigationButtons {
+  display: flex;
+  margin: 10px 10px 10px 0;
+  width: 100%;
+}
+
+.showMoreBtn {
+  width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  height: 40px;
+  font-size: 16px;
+  margin-right: 10px;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.showMoreBtn > :nth-child(1) {
+  margin-left: 3px;
+  height: 20px;
+}
+
+.showMoreBtn:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.justify {
+  display: flex;
+  align-items: center;
+  justify-content: end !important;
+}

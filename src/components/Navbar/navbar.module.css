@@ -1,0 +1,109 @@
+.navbar {
+  background-color: #1c2125;
+  color: white;
+  top: 0;
+  z-index: 50;
+  height: 64px;
+}
+
+.navbarContainer {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+}
+
+.logoAccent {
+  color: #3b82f6;
+}
+
+.navbarControls {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.searchContainer {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.searchInput {
+  width: 16rem;
+  padding: 0.5rem 1rem;
+  padding-right: 2.5rem;
+  border-radius: 9999px;
+  background-color: #f3f4f6;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.searchContainer.focused .searchInput {
+  width: 24rem;
+  background-color: white;
+  box-shadow: 0 0 0 2px #3b82f6;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: #9ca3af;
+}
+
+.navControls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.navButton {
+  color: white;
+
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color 0.2s ease;
+}
+
+.navButton:hover {
+  color: #3b82f6;
+}
+
+.navDivider {
+  width: 1px;
+  height: 2rem;
+  background-color: #e5e7eb;
+}
+
+.userAvatar {
+  width: 2rem;
+  height: 2rem;
+  background-color: #3b82f6;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+}
+
+button {
+  box-shadow: none !important;
+}
+
+h1 {
+  margin: 0;
+}
