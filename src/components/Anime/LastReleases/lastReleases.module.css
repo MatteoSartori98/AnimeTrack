@@ -1,5 +1,5 @@
 .container {
-  max-width: 1140px;
+  width: 100%;
   margin: 10px auto;
   flex-direction: column;
   justify-content: center;
@@ -16,7 +16,7 @@ h2 {
   color: white;
 }
 
-h3 {
+.container > h3 {
   display: flex;
   align-items: center;
   justify-content: start;
@@ -35,14 +35,14 @@ h3 {
 
 .row {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   flex-wrap: wrap;
 }
 
 .card {
   display: flex;
-  width: 368px;
-  height: 206px;
+  width: 348px;
+  height: 220px;
   margin: 4px 4px 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
 }

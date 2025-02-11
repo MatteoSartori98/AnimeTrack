@@ -1,15 +1,27 @@
 import { useState } from "react";
 import { Search, BookOpen, Heart, User } from "lucide-react";
 import styles from "./navbar.module.css";
+import { Link, useNavigate } from "react-router";
 
 export default function Navbar() {
+  const [searchInputValue, setSearchInputValue] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const navigate = useNavigate();
+
+  function handleSearch(event) {
+    event.preventDefault();
+    if (searchInputValue.trim()) {
+      navigate("/search", { state: { query: searchInputValue } });
+    }
+  }
 
   return (
     <nav className={styles.navbar}>
       <div className={styles.navbarContainer}>
         <h1 className={styles.logo}>
-          Anime<span className={styles.logoAccent}>Track</span>
+          <Link to="/">
+            Anime<span className={styles.logoAccent}>Track</span>
+          </Link>
         </h1>
         <div className={styles.navbarControls}>
           <div
@@ -19,12 +31,15 @@ export default function Navbar() {
           >
             <input
               type="text"
-              placeholder="Search anime..."
+              placeholder="Cerca anime..."
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
+              onChange={(event) => setSearchInputValue(event.target.value)}
               className={styles.searchInput}
             />
-            <Search className={styles.searchIcon} />
+            <button className={styles.searchButton} onClick={handleSearch}>
+              <Search className={styles.searchIcon} />
+            </button>
           </div>
           <div className={styles.navControls}>
             <button className={styles.navButton}>

@@ -1,0 +1,69 @@
+.card {
+  display: flex;
+  align-self: center;
+  align-items: center;
+  width: 100%;
+  background-color: #1c2125;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  padding: 10px;
+  color: white;
+}
+img {
+  height: 280px;
+  width: 180px;
+  margin-right: 10px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 20px;
+}
+
+.cardBody > h3 {
+  color: white;
+  font-size: 26px;
+  margin-bottom: 20px;
+}
+
+.cardBody > p {
+  color: white;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.cardBody > p > a {
+  cursor: pointer;
+  color: #3b82f6;
+}
+
+.tagsContainer {
+  margin-top: auto;
+}
+
+.textOverflow {
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Numero di linee da visualizzare */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tags {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  user-select: none;
+  margin: 2px;
+}
+.tags:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
