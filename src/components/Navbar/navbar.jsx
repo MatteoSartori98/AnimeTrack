@@ -8,8 +8,14 @@ export default function Navbar() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const navigate = useNavigate();
 
-  function handleSearch(event) {
-    event.preventDefault();
+  function handleKey(event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      navigate("/search", { state: { query: searchInputValue } });
+    }
+  }
+
+  function handleSearch() {
     if (searchInputValue.trim()) {
       navigate("/search", { state: { query: searchInputValue } });
     }
@@ -34,6 +40,7 @@ export default function Navbar() {
               placeholder="Cerca anime..."
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
+              onKeyDown={handleKey}
               onChange={(event) => setSearchInputValue(event.target.value)}
               className={styles.searchInput}
             />

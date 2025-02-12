@@ -1,18 +1,13 @@
 .container {
   min-height: 100vh;
+  max-width: 1460px;
+  align-self: center;
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  margin: 0 110px;
+  justify-content: center;
+  margin: 0 auto;
   gap: 20px;
   h1 {
     color: red;
   }
-}
-/* Questo dovrebbe essere sufficiente per far funzionare il toaster */
-.react-hot-toast {
-  position: fixed;
-  z-index: 9999;
-  top: 1rem;
-  right: 1rem;
 }

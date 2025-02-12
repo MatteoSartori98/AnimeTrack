@@ -1,0 +1,155 @@
+.componentContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(28, 33, 37);
+  color: white;
+  padding: 0 20px;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 4px;
+  width: 100%;
+  margin-top: 80px;
+}
+
+.filterContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 0px;
+  flex-wrap: nowrap;
+}
+
+.inputSearch {
+  width: 100%;
+}
+.inputSearch input {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: white;
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 4px;
+}
+
+.dropdownContainer {
+  position: relative;
+}
+
+.buttonn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  height: 44px;
+  margin: 10px 0;
+  padding: 0 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.dropdownButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  height: 44px;
+  margin: 10px 0;
+  padding: 0 20px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  border: 0;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filtersBox {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: 220px;
+  max-height: 240px;
+  overflow-y: auto;
+  background-color: #1c2125;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  padding: 10px;
+  z-index: 10;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2sease-in-out;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  input[type="checkbox"] {
+    accent-color: #3b82f6;
+  }
+}
+
+.selectedFilterContainer {
+  margin-bottom: 15px;
+}
+
+.selectedFilters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.selectedTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.8);
+  user-select: none;
+  margin: 2px;
+  gap: 5px;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+
+  button {
+    background: none;
+    border: none;
+    color: white;
+    padding: 0;
+    margin-left: 8px;
+    cursor: pointer;
+    opacity: 0.8;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

@@ -2,20 +2,17 @@ import React, { lazy, Suspense } from "react";
 import Hero from "../../components/Hero/hero";
 import styles from "./home.module.css";
 
-// Lazy load the components
 const LastReleases = lazy(() =>
   import("../../components/Anime/LastReleases/lastReleases")
 );
 const Popular = lazy(() => import("../../components/Anime/Popular/popular"));
 
-// Loading component
 const LoadingFallback = () => (
   <div className="loading-container">
     <div className="spinner"></div>
   </div>
 );
 
-// Error boundary component
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
