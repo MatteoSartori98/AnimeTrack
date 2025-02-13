@@ -13,17 +13,19 @@ export default function SearchResults() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   const [searchParams, setSearchParams] = useState({
-    searchQuery: initialSearchQuery,
+    searchQuery: "",
     filters: [],
   });
 
   useEffect(() => {
+    if (!searchParams.searchQuery && searchParams.filters.length === 0) {
+      return;
+    }
+
     async function fetchAnime() {
       setLoading(true);
       setErrored(false);
-
       try {
         const { searchQuery, filters } = searchParams;
         const genreIds = filters.map((filter) => filter.mal_id).join(",");
@@ -81,7 +83,7 @@ export default function SearchResults() {
     <div className={styles.container}>
       <Toaster position="top-right" />
       <Filter
-        initialSearchQuery={searchParams.searchQuery || initialSearchQuery}
+        initialSearchQuery={initialSearchQuery}
         onFilterSubmit={handleFilterSubmit}
       />
       {loading ? (
@@ -108,12 +110,11 @@ export default function SearchResults() {
           </div>
         </>
       ) : (
-        <div className={styles.errorContainer}>
-          <img
-            src={`/media/error.jpg?${new Date().getTime()}`}
-            className={styles.errorImage}
-            alt="Errore"
-          />
+        <div className={styles.emptyContainer}>
+          <p style={{ color: "white" }}>
+            Inserisci una ricerca o seleziona dei filtri e clicca
+            &ldquo;Filtra&ldquo;
+          </p>
         </div>
       )}
     </div>
