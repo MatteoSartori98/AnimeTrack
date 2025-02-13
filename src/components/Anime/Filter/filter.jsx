@@ -1,31 +1,41 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState, useRef } from "react";
 import styles from "./filter.module.css";
-import { Trash2, ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 
-export default function Filter() {
+export default function Filter({ initialSearchQuery, onFilterSubmit }) {
   const [genres, setGenres] = useState([]);
-  const [selectedFilters, setSelectedFilters] = useState([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || "");
+  const [selectedFilters, setSelectedFilters] = useState([]);
   const dropdownRef = useRef(null);
 
   useEffect(() => {
     async function fetchGenres() {
-      const response = await fetch("https://api.jikan.moe/v4/genres/anime");
-      const data = await response.json();
-      setGenres(data.data);
+      try {
+        const response = await fetch("https://api.jikan.moe/v4/genres/anime");
+        if (!response.ok) {
+          throw new Error("Errore nel caricamento dei generi");
+        }
+        const data = await response.json();
+        setGenres(data.data);
+      } catch (error) {
+        console.error("Errore:", error);
+      }
     }
     fetchGenres();
   }, []);
 
-  function handleSelection(event) {
-    const genre = event.target.value;
-    const isChecked = event.target.checked;
-
+  function handleSelection(genre, isChecked) {
     setSelectedFilters((prevFilters) =>
       isChecked
         ? [...prevFilters, genre]
-        : prevFilters.filter((filter) => filter !== genre)
+        : prevFilters.filter((filter) => filter.name !== genre.name)
     );
+  }
+
+  function handleSubmit() {
+    onFilterSubmit(searchQuery, selectedFilters);
   }
 
   useEffect(() => {
@@ -38,11 +48,23 @@ export default function Filter() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  function handleKeyPress(event) {
+    if (event.key === "Enter") {
+      handleSubmit();
+    }
+  }
+
   return (
     <div className={styles.componentContainer}>
       <div className={styles.filterContainer}>
         <div className={styles.inputSearch}>
-          <input type="text" placeholder="Cerca..." />
+          <input
+            type="text"
+            placeholder="Cerca..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleKeyPress}
+          />
         </div>
 
         <div className={styles.dropdownContainer} ref={dropdownRef}>
@@ -60,9 +82,13 @@ export default function Filter() {
                   <input
                     type="checkbox"
                     value={genre.name}
-                    onChange={handleSelection}
+                    onChange={(event) =>
+                      handleSelection(genre, event.target.checked)
+                    }
                     id={genre.mal_id}
-                    checked={selectedFilters.includes(genre.name)}
+                    checked={selectedFilters.some(
+                      (filter) => filter.name === genre.name
+                    )}
                   />
                   <label htmlFor={genre.mal_id}>{genre.name}</label>
                 </div>
@@ -71,22 +97,25 @@ export default function Filter() {
           )}
         </div>
 
-        <button className={styles.buttonn}>Filtra</button>
+        <button className={styles.buttonn} onClick={handleSubmit}>
+          Filtra
+        </button>
       </div>
 
       {selectedFilters.length > 0 && (
         <div className={styles.selectedFilterContainer}>
           <div className={styles.selectedFilters}>
             Filtri attivi:
-            {selectedFilters.map((filter, index) => (
-              <span key={index} className={styles.selectedTag}>
-                {filter}
-                <Trash2
-                  width={15}
-                  color="red"
+            {selectedFilters.map((filter) => (
+              <span key={filter.mal_id} className={styles.selectedTag}>
+                {filter.name}
+                <X
+                  style={{ marginTop: "2px", marginLeft: "5px" }}
+                  width={20}
+                  height={20}
                   onClick={() =>
                     setSelectedFilters(
-                      selectedFilters.filter((f) => f !== filter)
+                      selectedFilters.filter((f) => f.name !== filter.name)
                     )
                   }
                 />

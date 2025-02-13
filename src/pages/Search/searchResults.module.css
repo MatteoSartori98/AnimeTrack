@@ -1,13 +1,55 @@
 .container {
-  min-height: 100vh;
+  min-height: 70vh;
   max-width: 1460px;
   align-self: center;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: start;
   margin: 0 auto;
   gap: 20px;
   h1 {
     color: red;
   }
+}
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  img {
+    width: 600px;
+    margin-top: 100px;
+  }
+}
+.loadingContainer {
+  color: white;
+  font-size: 20px;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  gap: 10px;
+  margin-bottom: 40px;
+}
+
+.pagination button {
+  background-color: #70afce;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+
+.pagination button:disabled {
+  background-color: #bbb;
+}
+
+.pagination span {
+  font-size: 16px;
+  color: white;
+  font-weight: bold;
 }

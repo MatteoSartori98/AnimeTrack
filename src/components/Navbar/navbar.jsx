@@ -11,13 +11,14 @@ export default function Navbar() {
   function handleKey(event) {
     if (event.key === "Enter") {
       event.preventDefault();
-      navigate("/search", { state: { query: searchInputValue } });
+      handleSearch();
     }
   }
 
   function handleSearch() {
     if (searchInputValue.trim()) {
-      navigate("/search", { state: { query: searchInputValue } });
+      navigate("/search", { state: { query: searchInputValue.trim() } });
+      setSearchInputValue("");
     }
   }
 
@@ -38,6 +39,7 @@ export default function Navbar() {
             <input
               type="text"
               placeholder="Cerca anime..."
+              value={searchInputValue}
               onFocus={() => setIsSearchFocused(true)}
               onBlur={() => setIsSearchFocused(false)}
               onKeyDown={handleKey}

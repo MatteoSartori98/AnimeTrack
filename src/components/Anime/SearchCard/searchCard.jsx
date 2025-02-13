@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 import styles from "./searchCard.module.css";
+import { Star } from "lucide-react";
 
 const possibleStatuses = {
   FINISHED_AIRING: "Finished Airing",
@@ -57,7 +58,17 @@ export default function SearchCard({ anime }) {
 
   return (
     <div className={styles.card}>
-      <div style={{ position: "relative", display: "flex" }}>
+      <div
+        style={{
+          position: "relative",
+          display: "flex",
+        }}
+      >
+        <div className={styles.shadow}></div>
+        <div className={styles.rating}>
+          <Star width={18} style={{ color: "#ffd500" }} />
+          {anime.score}
+        </div>
         <img src={anime.images.jpg.large_image_url} alt={anime.title} />
       </div>
       <div className={styles.cardBody}>
