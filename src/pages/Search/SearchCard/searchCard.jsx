@@ -72,6 +72,7 @@ export default function SearchCard({ anime, setSelectedFilters, onFilterSubmit }
     event.preventDefault();
     setIsExpanded(!isExpanded);
   }
+
   function handleTagClick(genre) {
     const genreObject = {
       mal_id: genre,
@@ -81,6 +82,7 @@ export default function SearchCard({ anime, setSelectedFilters, onFilterSubmit }
     setSelectedFilters([genreObject]);
     onFilterSubmit("", [genreObject]);
   }
+
   return (
     <div className={styles.card}>
       <div

@@ -47,6 +47,8 @@ export default function LastReleases() {
       <div className={styles.row}>
         {availableEpisodes.slice(startIndex, visibleEpisodes).map((episode) => (
           <Link
+            to={`/detail/${episode.entry.mal_id}`}
+            state={{ episode }}
             key={episode.entry.mal_id}
             className={styles.card}
             style={{

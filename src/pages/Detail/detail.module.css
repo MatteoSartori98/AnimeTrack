@@ -1,0 +1,163 @@
+.container {
+  --line-clamp-value: 6;
+  min-height: 100vh;
+  max-width: 1460px;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  margin: 150px auto 0;
+  z-index: 1;
+  position: relative;
+}
+
+.banner {
+  background: linear-gradient(360deg, rgba(18, 22, 25, 1) 0%, rgba(253, 94, 83, 1) 40%, rgba(255, 173, 67, 1) 100%);
+
+  width: 100%;
+  position: absolute;
+  height: 300px;
+  z-index: 0;
+}
+
+.row {
+  max-width: 1460px;
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  border-radius: 4px;
+}
+
+.leftBox {
+  max-width: 285px !important;
+  color: white;
+  border-radius: 6px;
+  border-radius: 4px;
+}
+
+.rightBox {
+  width: 100% !important;
+  color: white;
+  border-radius: 6px;
+  padding: 0 16px 16px;
+  border-radius: 4px;
+
+  h2 {
+    background-color: transparent;
+    text-align: start;
+    font-size: 30px;
+    padding-top: 0;
+  }
+  p {
+    color: white;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 8px 0 0 0;
+    letter-spacing: 0.15px;
+  }
+
+  .top {
+    width: 100% !important;
+    padding: 0 16px 16px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .bottom {
+    display: flex;
+    flex-direction: column;
+    width: 100% !important;
+    gap: 20px;
+    border-radius: 4px;
+  }
+}
+a {
+  cursor: pointer;
+  color: #3b82f6;
+}
+.textOverflow {
+  display: -webkit-box;
+  -webkit-line-clamp: var(--line-clamp-value);
+  line-clamp: var(--line-clamp-value);
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.imgBox {
+  background-color: #1c2125;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.img {
+  width: 100%;
+  border-radius: 4px !important;
+  margin-top: 3px;
+}
+
+.infoBox {
+  background-color: #1c2125;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.tagBox {
+  background-color: #1c2125;
+  padding: 16px;
+  border-radius: 4px;
+
+  .tags {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    border-radius: 4px;
+
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+    user-select: none;
+    margin-right: 5px;
+  }
+
+  .tags:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+}
+
+.descriptionBox {
+  background-color: #1c2125;
+  padding: 16px;
+  border-radius: 4px;
+}
+
+.episodesBox {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  background-color: #1c2125;
+  padding: 16px;
+  gap: 25px;
+  margin: 0 auto !important;
+  border-radius: 4px;
+}
+.episodeButton {
+  width: 206px !important;
+  background-color: rgb(52, 58, 64);
+  padding: 10px 0px;
+  text-align: center;
+  text-decoration: none;
+  color: white;
+  align-self: center;
+  border-radius: 4px;
+  transition: 0.3s;
+}
+
+.episodeButton:hover {
+  transform: scale(0.98);
+  background-color: rgb(47, 52, 58);
+}

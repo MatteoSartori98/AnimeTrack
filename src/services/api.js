@@ -12,5 +12,6 @@ export const animeApi = {
     const genreParam = genres ? `&genres=${genres}` : "";
     return fetch(`${BASE_URL}/anime?page=${page}${searchParam}${genreParam}`).then((res) => res.json());
   },
+
+  getAllEpisodesURL: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}/episodes`),
 };
-9;

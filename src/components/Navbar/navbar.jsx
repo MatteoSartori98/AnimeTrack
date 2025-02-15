@@ -27,7 +27,8 @@ export default function Navbar() {
       <div className={styles.navbarContainer}>
         <h1 className={styles.logo}>
           <Link to="/">
-            Anime<span className={styles.logoAccent}>Track</span>
+            <span style={{ color: "white" }}>Anime</span>
+            <span className={styles.logoAccent}>Track</span>
           </Link>
         </h1>
         <div className={styles.navbarControls}>

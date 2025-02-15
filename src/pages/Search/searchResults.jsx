@@ -53,7 +53,7 @@ export default function SearchResults() {
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={{ marginRight: results.length == 0 ? "auto + 10" : "auto" }}>
       <Toaster position="top-right" />
       <Filter
         initialSearchQuery={initialSearchQuery}
