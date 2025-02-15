@@ -1,39 +1,24 @@
 import styles from "./popular.module.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router";
 import { ArrowRight, ArrowLeft, TrendingUp } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { animeApi } from "../../../services/api";
 
 export default function Popular() {
-  const [populars, setPopulars] = useState([]);
   const [visibleEpisodes, setVisibleEpisodes] = useState(7);
   const [startIndex, setStartIndex] = useState(0);
   const [remaining, setRemaining] = useState(0);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchPopulars() {
-      try {
-        const result = await fetch(`https://api.jikan.moe/v4/top/anime`);
-        if (!result.ok) {
-          throw new Error(
-            "Qualcosa è andato storto. Prova a ricaricare la pagina o riprova più tardi"
-          );
-        }
-        const data = await result.json();
-        if (!data || !data.data || data.data.length === 0) {
-          throw new Error(
-            "Qualcosa è andato storto. Prova a ricaricare la pagina o riprova più tardi"
-          );
-        }
-        setPopulars(data.data);
-        setRemaining(data.data.length - 7);
-      } catch (error) {
-        console.error("Errore durante il fetch:", error);
-        setError(error.message);
-      }
-    }
-    fetchPopulars();
-  }, []);
+  const { data, isError, isLoading } = useQuery({
+    queryKey: ["popular"],
+    queryFn: animeApi.getPopular,
+  });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <p className="error-text">Failed to load popular anime</p>;
+
+  const populars = data?.data || [];
 
   const loadNextEpisodes = () => {
     setRemaining(remaining - 7);
@@ -55,8 +40,8 @@ export default function Popular() {
         <TrendingUp style={{ marginRight: 8 }} />
         Popolari
       </h3>
-      {error ? (
-        <p className="error-text">{error}</p>
+      {isError ? (
+        <p className="error-text">{isError}</p>
       ) : (
         <>
           <div className={styles.row}>
@@ -73,11 +58,7 @@ export default function Popular() {
                   }}
                 >
                   <div className={styles.cardBody}>
-                    <h2 className={styles.animeTitle}>
-                      {episode.title.length > 40
-                        ? episode.title.slice(0, 40) + "..."
-                        : episode.title}
-                    </h2>
+                    <h2 className={styles.animeTitle}>{episode.title.length > 40 ? episode.title.slice(0, 40) + "..." : episode.title}</h2>
                   </div>
                 </Link>
               );
@@ -90,11 +71,7 @@ export default function Popular() {
             }}
           >
             {startIndex > 0 && (
-              <button
-                className={styles.showMoreBtn}
-                style={{ marginLeft: 10 }}
-                onClick={loadPrevEpisodes}
-              >
+              <button className={styles.showMoreBtn} style={{ marginLeft: 10 }} onClick={loadPrevEpisodes}>
                 <ArrowLeft />
                 Indietro
               </button>

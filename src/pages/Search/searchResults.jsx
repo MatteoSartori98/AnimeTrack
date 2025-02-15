@@ -1,63 +1,34 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import styles from "./searchResults.module.css";
 import SearchCard from "../../components/Anime/SearchCard/searchCard";
-import toast, { Toaster } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import Filter from "../../components/Anime/Filter/filter";
+import { animeApi } from "../../services/api";
 
 export default function SearchResults() {
   const location = useLocation();
   const initialSearchQuery = location.state?.query || "";
-  const [errored, setErrored] = useState(false);
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [searchParams, setSearchParams] = useState({
-    searchQuery: "",
+    searchQuery: initialSearchQuery,
     filters: [],
   });
 
-  useEffect(() => {
-    if (!searchParams.searchQuery && searchParams.filters.length === 0) {
-      return;
-    }
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["searchAnime", page, searchParams],
+    queryFn: () =>
+      animeApi.searchAnime({
+        page,
+        searchQuery: searchParams.searchQuery,
+        genres: searchParams.filters.map((f) => f.mal_id).join(","),
+      }),
+    enabled: !!(searchParams.searchQuery || searchParams.filters.length),
+  });
 
-    async function fetchAnime() {
-      setLoading(true);
-      setErrored(false);
-      try {
-        const { searchQuery, filters } = searchParams;
-        const genreIds = filters.map((filter) => filter.mal_id).join(",");
-        const genreParam = genreIds ? `&genres=${genreIds}` : "";
-        const searchParam = searchQuery ? `&q=${searchQuery}` : "";
-        const result = await fetch(
-          `https://api.jikan.moe/v4/anime?page=${page}${searchParam}${genreParam}`
-        );
-
-        if (!result.ok) {
-          throw new Error("Errore durante la richiesta, riprova più tardi.");
-        }
-
-        const data = await result.json();
-
-        if (!data || !data.data || data.data.length === 0) {
-          throw new Error("Nessun risultato trovato.");
-        }
-
-        setResults(data.data);
-        setTotalPages(data.pagination.last_visible_page);
-      } catch (error) {
-        toast.error(error.message);
-        setErrored(true);
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchAnime();
-  }, [searchParams, page]);
+  const results = data?.data || [];
+  const totalPages = data?.pagination?.last_visible_page || 1;
 
   function handleFilterSubmit(newSearchQuery, newFilters) {
     setSearchParams({
@@ -68,7 +39,7 @@ export default function SearchResults() {
   }
 
   function showList() {
-    return (results.length > 0 || loading) && !errored;
+    return (results.length > 0 || isLoading) && !isError;
   }
 
   function handleNextPage() {
@@ -82,11 +53,8 @@ export default function SearchResults() {
   return (
     <div className={styles.container}>
       <Toaster position="top-right" />
-      <Filter
-        initialSearchQuery={initialSearchQuery}
-        onFilterSubmit={handleFilterSubmit}
-      />
-      {loading ? (
+      <Filter initialSearchQuery={initialSearchQuery} onFilterSubmit={handleFilterSubmit} />
+      {isLoading ? (
         <div className={styles.loadingContainer}>
           <span>Caricamento...</span>
         </div>
@@ -112,8 +80,7 @@ export default function SearchResults() {
       ) : (
         <div className={styles.emptyContainer}>
           <p style={{ color: "white" }}>
-            Inserisci una ricerca o seleziona dei filtri e clicca
-            &ldquo;Filtra&ldquo;
+            {isError ? "Si è verificato un errore. Riprova più tardi." : 'Inserisci una ricerca o seleziona dei filtri e clicca "Filtra"'}
           </p>
         </div>
       )}

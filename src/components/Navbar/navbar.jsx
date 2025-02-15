@@ -17,7 +17,7 @@ export default function Navbar() {
 
   function handleSearch() {
     if (searchInputValue.trim()) {
-      navigate("/search", { state: { query: searchInputValue.trim() } });
+      navigate("/search", { state: { query: searchInputValue.trim() }, replace: true });
       setSearchInputValue("");
     }
   }
@@ -31,11 +31,7 @@ export default function Navbar() {
           </Link>
         </h1>
         <div className={styles.navbarControls}>
-          <div
-            className={`${styles.searchContainer} ${
-              isSearchFocused ? "focused" : ""
-            }`}
-          >
+          <div className={`${styles.searchContainer} ${isSearchFocused ? "focused" : ""}`}>
             <input
               type="text"
               placeholder="Cerca anime..."
