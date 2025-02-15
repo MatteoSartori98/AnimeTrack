@@ -11,6 +11,8 @@ export default function SearchResults() {
   const location = useLocation();
   const initialSearchQuery = location.state?.query || "";
   const [page, setPage] = useState(1);
+  const [selectedFilters, setSelectedFilters] = useState([]);
+
   const [searchParams, setSearchParams] = useState({
     searchQuery: initialSearchQuery,
     filters: [],
@@ -53,7 +55,12 @@ export default function SearchResults() {
   return (
     <div className={styles.container}>
       <Toaster position="top-right" />
-      <Filter initialSearchQuery={initialSearchQuery} onFilterSubmit={handleFilterSubmit} />
+      <Filter
+        initialSearchQuery={initialSearchQuery}
+        onFilterSubmit={handleFilterSubmit}
+        setSelectedFilters={setSelectedFilters}
+        selectedFilters={selectedFilters}
+      />
       {isLoading ? (
         <div className={styles.loadingContainer}>
           <span>Caricamento...</span>
@@ -62,7 +69,7 @@ export default function SearchResults() {
         <>
           <div className={styles.container}>
             {results.map((anime, index) => (
-              <SearchCard key={`${anime.mal_id}-${index}`} anime={anime} />
+              <SearchCard key={`${anime.mal_id}-${index}`} anime={anime} setSelectedFilters={setSelectedFilters} onFilterSubmit={handleFilterSubmit} />
             ))}
           </div>
           <div className={styles.pagination}>

@@ -17,10 +17,10 @@ section {
   gap: 5px;
   width: 100%;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  height: 44px;
-  margin: 10px 0;
+  height: 54px;
+  margin: 0px 0 10px;
   border-radius: 6px;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 600;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;

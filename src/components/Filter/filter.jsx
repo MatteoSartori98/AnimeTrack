@@ -5,10 +5,9 @@ import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { animeApi } from "../../services/api";
 
-export default function Filter({ initialSearchQuery, onFilterSubmit }) {
+export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFilters, setSelectedFilters }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery || "");
-  const [selectedFilters, setSelectedFilters] = useState([]);
   const dropdownRef = useRef(null);
 
   const { data: genresData, isError } = useQuery({

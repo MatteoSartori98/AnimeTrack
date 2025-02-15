@@ -43,7 +43,7 @@ const fetchImage = async (url) => {
   return URL.createObjectURL(blob);
 };
 
-export default function SearchCard({ anime }) {
+export default function SearchCard({ anime, setSelectedFilters, onFilterSubmit }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: imageUrl, isLoading } = useQuery({
@@ -72,7 +72,15 @@ export default function SearchCard({ anime }) {
     event.preventDefault();
     setIsExpanded(!isExpanded);
   }
+  function handleTagClick(genre) {
+    const genreObject = {
+      mal_id: genre,
+      name: anime.genres.find((g) => g.mal_id === genre)?.name,
+    };
 
+    setSelectedFilters([genreObject]);
+    onFilterSubmit("", [genreObject]);
+  }
   return (
     <div className={styles.card}>
       <div
@@ -87,7 +95,7 @@ export default function SearchCard({ anime }) {
           {anime.score}
         </div>
         {isLoading ? (
-          <div className={styles.imagePlaceholder}>Loading...</div>
+          <div className={styles.imagePlaceholder}></div>
         ) : (
           <img
             src={imageUrl}
@@ -126,7 +134,7 @@ export default function SearchCard({ anime }) {
         </div>
         <div className={styles.tagsContainer}>
           {anime.genres.map((el) => (
-            <button key={el.mal_id} className={styles.tags}>
+            <button key={el.mal_id} className={styles.tags} onClick={() => handleTagClick(el.mal_id)}>
               {el.name}
             </button>
           ))}

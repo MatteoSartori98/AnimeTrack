@@ -1,5 +1,5 @@
 import styles from "./popular.module.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { ArrowRight, ArrowLeft, TrendingUp } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -14,6 +14,12 @@ export default function Popular() {
     queryKey: ["popular"],
     queryFn: animeApi.getPopular,
   });
+
+  useEffect(() => {
+    if (data?.data) {
+      setRemaining(data.data.length - visibleEpisodes);
+    }
+  }, [data, visibleEpisodes]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <p className="error-text">Failed to load popular anime</p>;
@@ -40,51 +46,43 @@ export default function Popular() {
         <TrendingUp style={{ marginRight: 8 }} />
         Popolari
       </h3>
-      {isError ? (
-        <p className="error-text">{isError}</p>
-      ) : (
-        <>
-          <div className={styles.row}>
-            {populars.slice(startIndex, visibleEpisodes).map((episode) => {
-              return (
-                <Link
-                  key={episode.mal_id}
-                  className={styles.card}
-                  style={{
-                    backgroundImage: `url(${episode.images.jpg.large_image_url})`,
-                    backgroundPosition: "center",
-                    backgroundSize: "cover",
-                    backgroundRepeat: "no-repeat",
-                  }}
-                >
-                  <div className={styles.cardBody}>
-                    <h2 className={styles.animeTitle}>{episode.title.length > 40 ? episode.title.slice(0, 40) + "..." : episode.title}</h2>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-          <div
-            className={styles.navigationButtons}
+      <div className={styles.row}>
+        {populars.slice(startIndex, visibleEpisodes).map((episode) => (
+          <Link
+            key={episode.mal_id}
+            className={styles.card}
             style={{
-              justifyContent: startIndex > 0 ? "space-between" : " flex-end",
+              backgroundImage: `url(${episode.images.jpg.large_image_url})`,
+              backgroundPosition: "center",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
             }}
           >
-            {startIndex > 0 && (
-              <button className={styles.showMoreBtn} style={{ marginLeft: 10 }} onClick={loadPrevEpisodes}>
-                <ArrowLeft />
-                Indietro
-              </button>
-            )}
-            {startIndex + 6 < populars.length && remaining >= 6 ? (
-              <button className={styles.showMoreBtn} onClick={loadNextEpisodes}>
-                Avanti
-                <ArrowRight />
-              </button>
-            ) : null}
-          </div>
-        </>
-      )}
+            <div className={styles.cardBody}>
+              <h2 className={styles.animeTitle}>{episode.title.length > 40 ? episode.title.slice(0, 40) + "..." : episode.title}</h2>
+            </div>
+          </Link>
+        ))}
+      </div>
+      <div
+        className={styles.navigationButtons}
+        style={{
+          justifyContent: startIndex > 0 ? "space-between" : "flex-end",
+        }}
+      >
+        {startIndex > 0 && (
+          <button className={styles.showMoreBtn} style={{ marginLeft: 10 }} onClick={loadPrevEpisodes}>
+            <ArrowLeft />
+            Indietro
+          </button>
+        )}
+        {startIndex + 6 < populars.length && remaining >= 6 ? (
+          <button className={styles.showMoreBtn} style={{ marginRight: 10 }} onClick={loadNextEpisodes}>
+            Avanti
+            <ArrowRight />
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }

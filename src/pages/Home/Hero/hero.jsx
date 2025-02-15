@@ -11,21 +11,13 @@ export default function Hero() {
   return (
     <section className={styles.hero}>
       <div className={styles.heroContainer}>
-        <button className={styles.callToAction}>
-          <Link to="/search" style={{ display: "flex", alignItems: "center" }}>
-            <BellPlus height={18} width={18} style={{ marginRight: "5px" }} />
-            <span>
-              Cerca e aggiungi i tuoi anime preferiti e tieni traccia dei
-              progressi !
-            </span>
-          </Link>
-        </button>
-        <Swiper
-          navigation={true}
-          autoplay={{ delay: 3000, disableOnInteraction: false }}
-          modules={[Navigation, Autoplay]}
-          className={styles.swiper}
-        >
+        <Link to="/search" style={{ display: "flex", alignItems: "center" }}>
+          <button className={styles.callToAction}>
+            <BellPlus height={22} width={22} style={{ marginRight: "5px" }} />
+            <span>Cerca e aggiungi i tuoi anime preferiti e tieni traccia dei progressi !</span>
+          </button>
+        </Link>
+        <Swiper navigation={true} autoplay={{ delay: 3000, disableOnInteraction: false }} modules={[Navigation, Autoplay]} className={styles.swiper}>
           <SwiperSlide>
             <h5 className="">Solo Leveling</h5>
             <img src="/media/solo-leveling.jpg" alt="" />

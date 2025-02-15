@@ -21,7 +21,7 @@ h2 {
   align-items: center;
   justify-content: start;
   background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  height: 44px;
+  height: 54px;
   margin: 0px 0px 10px;
   padding-left: 20px;
   border-bottom-right-radius: 0 !important;
@@ -57,7 +57,7 @@ h2 {
 
 .navigationButtons {
   display: flex;
-  margin: 10px 10px 10px 0;
+  margin: 0px 10px 15px;
   width: 100%;
 }
 
