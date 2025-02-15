@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import styles from "./searchResults.module.css";
-import SearchCard from "../../components/Anime/SearchCard/searchCard";
+import SearchCard from "./SearchCard/searchCard";
 import { Toaster } from "react-hot-toast";
-import Filter from "../../components/Anime/Filter/filter";
+import Filter from "../../components/Filter/filter";
 import { animeApi } from "../../services/api";
 
 export default function SearchResults() {

@@ -3,7 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import styles from "./filter.module.css";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { animeApi } from "../../../services/api";
+import { animeApi } from "../../services/api";
 
 export default function Filter({ initialSearchQuery, onFilterSubmit }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

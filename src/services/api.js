@@ -13,3 +13,4 @@ export const animeApi = {
     return fetch(`${BASE_URL}/anime?page=${page}${searchParam}${genreParam}`).then((res) => res.json());
   },
 };
+9;

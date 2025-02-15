@@ -1,7 +1,7 @@
-import Hero from "../../components/Hero/hero";
+import Hero from "./Hero/hero";
 import styles from "./home.module.css";
-import LastReleases from "../../components/Anime/LastReleases/lastReleases";
-import Popular from "../../components/Anime/Popular/popular";
+import LastReleases from "./LastReleases/lastReleases";
+import Popular from "./Popular/popular";
 
 export default function Home() {
   return (

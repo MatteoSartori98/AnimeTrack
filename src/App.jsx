@@ -1,9 +1,19 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router";
-import Layout from "./components/Layout/layout";
 import Home from "./pages/Home/home";
 // import Anime from "./pages/Anime/anime";
 import SearchResults from "./pages/Search/searchResults";
+import { Outlet } from "react-router";
+import Navbar from "./components/Navbar/navbar";
+
+function Layout() {
+  return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
+}
 
 function App() {
   return (
