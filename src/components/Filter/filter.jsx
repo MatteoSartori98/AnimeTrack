@@ -5,9 +5,10 @@ import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { animeApi } from "../../services/api";
 
-export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFilters, setSelectedFilters }) {
+export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFiltersIds }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(initialSearchQuery || "");
+  const [actualSearchQuery, setActualSearchQuery] = useState("");
+  const [actualFiltersIds, setActualFiltersIds] = useState([]);
   const dropdownRef = useRef(null);
 
   const { data: genresData, isError } = useQuery({
@@ -18,14 +19,17 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
   const genres = genresData?.data || [];
 
   function handleSelection(genre, isChecked) {
-    setSelectedFilters((prevFilters) => (isChecked ? [...prevFilters, genre] : prevFilters.filter((filter) => filter.name !== genre.name)));
+    setActualFiltersIds((prevFilterIds) => (isChecked ? [...prevFilterIds, genre.mal_id] : prevFilterIds.filter((filterId) => filterId !== genre.mal_id)));
   }
 
   function handleSubmit() {
-    onFilterSubmit(searchQuery, selectedFilters);
+    onFilterSubmit(actualSearchQuery, actualFiltersIds);
   }
 
   useEffect(() => {
+    setActualFiltersIds(selectedFiltersIds);
+    setActualSearchQuery(initialSearchQuery || "");
+
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsDropdownOpen(false);
@@ -33,7 +37,7 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [selectedFiltersIds, initialSearchQuery]);
 
   function handleKeyPress(event) {
     if (event.key === "Enter") {
@@ -41,11 +45,21 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
     }
   }
 
+  const getFilterById = (filterId) => {
+    return genres.find((g) => g.mal_id === +filterId);
+  };
+
   return (
     <div className={styles.componentContainer}>
       <div className={styles.filterContainer}>
         <div className={styles.inputSearch}>
-          <input type="text" placeholder="Cerca..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={handleKeyPress} />
+          <input
+            type="text"
+            placeholder="Cerca..."
+            value={actualSearchQuery}
+            onChange={(e) => setActualSearchQuery(e.target.value)}
+            onKeyDown={handleKeyPress}
+          />
         </div>
 
         <div className={styles.dropdownContainer} ref={dropdownRef}>
@@ -62,7 +76,10 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
                     value={genre.name}
                     onChange={(event) => handleSelection(genre, event.target.checked)}
                     id={genre.mal_id}
-                    checked={selectedFilters.some((filter) => filter.name === genre.name)}
+                    checked={actualFiltersIds
+                      .filter((f) => f !== "")
+                      .map((f) => getFilterById(f))
+                      .some((filter) => filter.name === genre.name)}
                   />
                   <label htmlFor={genre.mal_id}>{genre.name}</label>
                 </div>
@@ -76,21 +93,23 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
         </button>
       </div>
 
-      {selectedFilters.length > 0 && (
+      {actualFiltersIds.length > 0 && (
         <div className={styles.selectedFilterContainer}>
           <div className={styles.selectedFilters}>
             Filtri attivi:
-            {selectedFilters.map((filter) => (
-              <span key={filter.mal_id} className={styles.selectedTag}>
-                {filter.name}
-                <X
-                  style={{ marginTop: "2px", marginLeft: "5px" }}
-                  width={20}
-                  height={20}
-                  onClick={() => setSelectedFilters(selectedFilters.filter((f) => f.name !== filter.name))}
-                />
-              </span>
-            ))}
+            {actualFiltersIds
+              .map((f) => getFilterById(f))
+              .map((filter) => (
+                <span key={filter.mal_id} className={styles.selectedTag}>
+                  {filter.name}
+                  <X
+                    style={{ marginTop: "2px", marginLeft: "5px" }}
+                    width={20}
+                    height={20}
+                    onClick={() => setActualFiltersIds(actualFiltersIds.filter((f) => f !== filter.mal_id))}
+                  />
+                </span>
+              ))}
           </div>
         </div>
       )}

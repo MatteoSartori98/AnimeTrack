@@ -3,6 +3,7 @@ import { useState } from "react";
 import styles from "./searchCard.module.css";
 import { Star } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router";
 
 const possibleStatuses = {
   FINISHED_AIRING: "Finished Airing",
@@ -43,7 +44,7 @@ const fetchImage = async (url) => {
   return URL.createObjectURL(blob);
 };
 
-export default function SearchCard({ anime, setSelectedFilters, onFilterSubmit }) {
+export default function SearchCard({ anime, onGenreClick }) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: imageUrl, isLoading } = useQuery({
@@ -73,79 +74,91 @@ export default function SearchCard({ anime, setSelectedFilters, onFilterSubmit }
     setIsExpanded(!isExpanded);
   }
 
-  function handleTagClick(genre) {
+  function handleTagClick(genre, event) {
+    event.preventDefault();
     const genreObject = {
       mal_id: genre,
       name: anime.genres.find((g) => g.mal_id === genre)?.name,
     };
 
-    setSelectedFilters([genreObject]);
-    onFilterSubmit("", [genreObject]);
+    onGenreClick(genreObject.mal_id);
   }
 
   return (
-    <div className={styles.card}>
-      <div
-        style={{
-          position: "relative",
-          display: "flex",
-        }}
-      >
-        <div className={styles.shadow}></div>
-        <div className={styles.rating}>
-          <Star width={18} style={{ color: "#ffd500" }} />
-          {anime.score}
+    <>
+      <Link to={`/detail/${anime.mal_id}`} state={{ episode: anime }} key={anime.mal_id} className={styles.card}>
+        <div
+          style={{
+            position: "relative",
+            display: "flex",
+          }}
+        >
+          <div className={styles.shadow}></div>
+          <div className={styles.rating}>
+            <Star width={18} style={{ color: "#ffd500" }} />
+            {anime.score}
+          </div>
+          {isLoading ? (
+            <div className={styles.imagePlaceholder}></div>
+          ) : (
+            <img
+              src={imageUrl}
+              alt={anime.title}
+              loading="lazy"
+              onError={(e) => {
+                e.target.src = "/fallback-image.jpg";
+              }}
+            />
+          )}
         </div>
-        {isLoading ? (
-          <div className={styles.imagePlaceholder}></div>
-        ) : (
-          <img
-            src={imageUrl}
-            alt={anime.title}
-            loading="lazy"
-            onError={(e) => {
-              e.target.src = "/fallback-image.jpg";
-            }}
-          />
-        )}
-      </div>
-      <div className={styles.cardBody}>
-        <div className={styles.cardHeader}>
-          <h3 className={styles.h3}>{anime.title}</h3>
-          <h5 className={styles.h5}>{anime.title_japanese}</h5>
-          <div className={styles.status}>{createStatusTagbox(anime.status)}</div>
-        </div>
-        <div style={{ display: "flex" }}>
-          <p>
-            {!isExpanded ? (
-              anime.synopsis?.length > 500 ? (
-                <>
-                  <span className={styles.textOverflow}>{anime.synopsis}</span>
-                  <a onClick={handleClick}> leggi di più</a>
-                </>
+        <div className={styles.cardBody}>
+          <div className={styles.cardHeader}>
+            <h3 className={styles.h3}>{anime.title}</h3>
+            <h5 className={styles.h5}>{anime.title_japanese}</h5>
+            <div className={styles.status}>{createStatusTagbox(anime.status)}</div>
+          </div>
+          <div style={{ display: "flex" }}>
+            <p>
+              {!isExpanded ? (
+                anime.synopsis?.length > 500 ? (
+                  <>
+                    <span className={styles.textOverflow}>{anime.synopsis}</span>
+                    <button
+                      style={{ background: "none", color: "#3b82f6", border: "0", fontSize: "15px", fontWeight: "bold", cursor: "pointer" }}
+                      onClick={handleClick}
+                    >
+                      leggi di più
+                    </button>
+                  </>
+                ) : (
+                  anime.synopsis
+                )
               ) : (
-                anime.synopsis
-              )
-            ) : (
-              <>
-                {anime.synopsis}
-                <a onClick={handleClick}> nascondi</a>
-              </>
-            )}
-          </p>
+                <>
+                  {anime.synopsis}
+                  <button
+                    style={{ background: "none", color: "#3b82f6", border: "0", fontSize: "15px", fontWeight: "bold", cursor: "pointer" }}
+                    onClick={handleClick}
+                  >
+                    nascondi
+                  </button>
+                </>
+              )}
+            </p>
+          </div>
+          <div className={styles.tagsContainer}>
+            {anime.genres.map((el) => (
+              <button key={el.mal_id} className={styles.tags} onClick={(event) => handleTagClick(el.mal_id, event)}>
+                {el.name}
+              </button>
+            ))}
+          </div>
+          <div style={{ display: "flex" }}>
+            <div style={{ marginRight: "20px" }}>{anime.episodes === null ? "Unknown" : anime.episodes} episodes </div>
+            <div>{anime.duration.split(" ").slice(0, 2)} duration </div>
+          </div>
         </div>
-        <div className={styles.tagsContainer}>
-          {anime.genres.map((el) => (
-            <button key={el.mal_id} className={styles.tags} onClick={() => handleTagClick(el.mal_id)}>
-              {el.name}
-            </button>
-          ))}
-        </div>
-        <div style={{ display: "flex" }}>
-          <div style={{ marginRight: "20px" }}>{anime.episodes === null ? "Unknown" : anime.episodes} episodes </div>
-          <div>{anime.duration.split(" ").slice(0, 2)} duration </div>
-        </div>
-      </div>
-    </div>
+      </Link>
+    </>
   );
 }

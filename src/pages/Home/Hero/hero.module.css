@@ -46,11 +46,10 @@ section {
   text-align: center;
   font-size: 18px;
   background: #fff;
-  display: flex;
+  display: flex !important;
   justify-content: center;
   align-items: center;
   height: 400px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
   background-color: transparent;
 }
 

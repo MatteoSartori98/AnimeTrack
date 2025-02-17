@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, BookOpen, Heart, User } from "lucide-react";
 import styles from "./navbar.module.css";
-import { Link, useNavigate } from "react-router";
+import { createSearchParams, Link, useNavigate } from "react-router";
 
 export default function Navbar() {
   const [searchInputValue, setSearchInputValue] = useState("");
@@ -17,7 +17,13 @@ export default function Navbar() {
 
   function handleSearch() {
     if (searchInputValue.trim()) {
-      navigate("/search", { state: { query: searchInputValue.trim() }, replace: true });
+      const queryParams = createSearchParams({
+        q: searchInputValue.trim(),
+      });
+      navigate({
+        pathname: "/search",
+        search: queryParams.toString(),
+      });
       setSearchInputValue("");
     }
   }

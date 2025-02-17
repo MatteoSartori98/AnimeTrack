@@ -1,43 +1,48 @@
-import { useState } from "react";
-import { useLocation } from "react-router";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import styles from "./searchResults.module.css";
 import SearchCard from "./SearchCard/searchCard";
 import { Toaster } from "react-hot-toast";
 import Filter from "../../components/Filter/filter";
 import { animeApi } from "../../services/api";
+import { useSearchParams } from "react-router";
 
 export default function SearchResults() {
-  const location = useLocation();
-  const initialSearchQuery = location.state?.query || "";
+  const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
-  const [selectedFilters, setSelectedFilters] = useState([]);
 
-  const [searchParams, setSearchParams] = useState({
-    searchQuery: initialSearchQuery,
-    filters: [],
-  });
+  const searchQuery = useMemo(() => {
+    return searchParams.get("q");
+  }, [searchParams]);
+  const filterIds = useMemo(() => {
+    const genres = searchParams.get("g");
+    if (genres === null || genres === undefined || genres.length === 0) return [];
+
+    return genres?.split(",").map((f) => +f);
+  }, [searchParams]);
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["searchAnime", page, searchParams],
+    queryKey: ["searchAnime", page, searchParams.toString()],
     queryFn: () =>
       animeApi.searchAnime({
         page,
-        searchQuery: searchParams.searchQuery,
-        genres: searchParams.filters.map((f) => f.mal_id).join(","),
+        searchQuery,
+        genres: filterIds,
       }),
-    enabled: !!(searchParams.searchQuery || searchParams.filters.length),
+    enabled: !!(searchQuery || filterIds),
   });
 
   const results = data?.data || [];
   const totalPages = data?.pagination?.last_visible_page || 1;
 
-  function handleFilterSubmit(newSearchQuery, newFilters) {
-    setSearchParams({
-      searchQuery: newSearchQuery,
-      filters: newFilters,
-    });
+  function handleFilterSubmit(searchedString, newFilterIds) {
+    setSearchParams({ q: searchedString, g: newFilterIds.join(",") });
+
     setPage(1);
+  }
+
+  function onGenreClick(filterId) {
+    setSearchParams({ g: filterId });
   }
 
   function showList() {
@@ -55,12 +60,7 @@ export default function SearchResults() {
   return (
     <div className={styles.container} style={{ marginRight: results.length == 0 ? "auto + 10" : "auto" }}>
       <Toaster position="top-right" />
-      <Filter
-        initialSearchQuery={initialSearchQuery}
-        onFilterSubmit={handleFilterSubmit}
-        setSelectedFilters={setSelectedFilters}
-        selectedFilters={selectedFilters}
-      />
+      <Filter initialSearchQuery={searchQuery} onFilterSubmit={handleFilterSubmit} selectedFiltersIds={filterIds} />
       {isLoading ? (
         <div className={styles.loadingContainer}>
           <span>Caricamento...</span>
@@ -69,7 +69,7 @@ export default function SearchResults() {
         <>
           <div className={styles.container}>
             {results.map((anime, index) => (
-              <SearchCard key={`${anime.mal_id}-${index}`} anime={anime} setSelectedFilters={setSelectedFilters} onFilterSubmit={handleFilterSubmit} />
+              <SearchCard key={`${anime.mal_id}-${index}`} anime={anime} onGenreClick={onGenreClick} />
             ))}
           </div>
           <div className={styles.pagination}>

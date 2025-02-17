@@ -13,5 +13,7 @@ export const animeApi = {
     return fetch(`${BASE_URL}/anime?page=${page}${searchParam}${genreParam}`).then((res) => res.json());
   },
 
-  getAllEpisodesURL: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}/episodes`),
+  getAllEpisodesURL: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}/episodes`).then((res) => res.json()),
+  getRecommendedAnime: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}/recommendations`).then((res) => res.json()),
+  getAnimeData: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}`).then((res) => res.json()),
 };
