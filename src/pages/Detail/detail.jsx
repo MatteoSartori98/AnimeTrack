@@ -5,7 +5,7 @@ import "swiper/css/navigation";
 import "swiper/css/autoplay";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Link } from "react-router";
+import { createSearchParams, Link, useNavigate } from "react-router";
 import { useLocation } from "react-router";
 import { animeApi } from "../../services/api";
 import { useState } from "react";
@@ -49,6 +49,7 @@ const fetchAnimeDetails = async (animeID) => {
 
 export default function Detail() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [episode, setEpisode] = useState(location.state?.episode);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -99,8 +100,6 @@ export default function Detail() {
     const newAnimeData = await fetchAnimeDetails(animeID);
     setEpisode(newAnimeData);
   };
-
-  console.log(episode);
 
   return (
     <>
@@ -161,7 +160,7 @@ export default function Detail() {
                 <h4> Studio: {episode.studios[0].name}</h4>
                 <h4> Stato: {createStatusTagbox(episode.status)}</h4>
                 <h4> Data di uscita: {formatDate(date)}</h4>
-                <h4> Episodi: {episode.episodes}</h4>
+                <h4> Episodi: {episodes.length === 0 ? "1" : episodes.length}</h4>
                 <h4> Durata episodi: {episode.duration.split(" ").slice(0, 2)}</h4>
                 <h4> Visualizzazioni: {episode.members}</h4>
                 <h4 style={{ display: "flex", alignItems: "center" }}>
@@ -169,11 +168,22 @@ export default function Detail() {
                 </h4>
               </div>
               <div className={styles.tagBox}>
-                {episode.genres.map((genre) => (
-                  <button key={genre.mal_id} className={styles.tags}>
-                    {genre.name}
-                  </button>
-                ))}
+                {episode.genres.map((genre) => {
+                  const queryParams = createSearchParams({
+                    g: genre.mal_id,
+                  });
+                  return (
+                    <Link
+                      key={genre.mal_id}
+                      to={{
+                        pathname: "/search",
+                        search: queryParams.toString(),
+                      }}
+                    >
+                      <button className={styles.tags}>{genre.name}</button>
+                    </Link>
+                  );
+                })}
               </div>
               <div className={styles.descriptionBox}>
                 <div style={{ padding: "0 0px 4px", display: "flex", gap: "5px" }}>

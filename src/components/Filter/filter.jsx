@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import styles from "./filter.module.css";
 import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -16,7 +16,18 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
     queryFn: animeApi.getGenres,
   });
 
-  const genres = genresData?.data || [];
+  const genres = useMemo(() => genresData?.data || [], [genresData]);
+
+  const getFilterById = useCallback(
+    (filterId) => {
+      return genres.find((g) => g.mal_id === +filterId);
+    },
+    [genres]
+  );
+
+  const actualFilters = useMemo(() => {
+    return actualFiltersIds.map((f) => getFilterById(f)).filter((f) => f !== undefined);
+  }, [actualFiltersIds, getFilterById]);
 
   function handleSelection(genre, isChecked) {
     setActualFiltersIds((prevFilterIds) => (isChecked ? [...prevFilterIds, genre.mal_id] : prevFilterIds.filter((filterId) => filterId !== genre.mal_id)));
@@ -45,10 +56,6 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
     }
   }
 
-  const getFilterById = (filterId) => {
-    return genres.find((g) => g.mal_id === +filterId);
-  };
-
   return (
     <div className={styles.componentContainer}>
       <div className={styles.filterContainer}>
@@ -76,10 +83,7 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
                     value={genre.name}
                     onChange={(event) => handleSelection(genre, event.target.checked)}
                     id={genre.mal_id}
-                    checked={actualFiltersIds
-                      .filter((f) => f !== "")
-                      .map((f) => getFilterById(f))
-                      .some((filter) => filter.name === genre.name)}
+                    checked={actualFiltersIds.some((filter) => filter === genre.mal_id)}
                   />
                   <label htmlFor={genre.mal_id}>{genre.name}</label>
                 </div>
@@ -97,19 +101,17 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
         <div className={styles.selectedFilterContainer}>
           <div className={styles.selectedFilters}>
             Filtri attivi:
-            {actualFiltersIds
-              .map((f) => getFilterById(f))
-              .map((filter) => (
-                <span key={filter.mal_id} className={styles.selectedTag}>
-                  {filter.name}
-                  <X
-                    style={{ marginTop: "2px", marginLeft: "5px" }}
-                    width={20}
-                    height={20}
-                    onClick={() => setActualFiltersIds(actualFiltersIds.filter((f) => f !== filter.mal_id))}
-                  />
-                </span>
-              ))}
+            {actualFilters.map((actualFilter) => (
+              <span key={actualFilter.mal_id} className={styles.selectedTag}>
+                {actualFilter.name}
+                <X
+                  style={{ marginTop: "2px", marginLeft: "5px" }}
+                  width={20}
+                  height={20}
+                  onClick={() => setActualFiltersIds(actualFiltersIds.filter((actualFilterId) => actualFilterId !== actualFilter.mal_id))}
+                />
+              </span>
+            ))}
           </div>
         </div>
       )}

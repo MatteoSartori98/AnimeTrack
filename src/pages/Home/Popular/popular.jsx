@@ -49,7 +49,7 @@ export default function Popular() {
       <div className={styles.row}>
         {populars.slice(startIndex, visibleEpisodes).map((episode) => (
           <Link
-            to={`/detail/episode.mal_id`}
+            to={`/detail/${episode.mal_id}`}
             state={{ episode }}
             key={episode.mal_id}
             className={styles.card}

@@ -1,12 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { Search, BookOpen, Heart, User } from "lucide-react";
 import styles from "./navbar.module.css";
 import { createSearchParams, Link, useNavigate } from "react-router";
+import supabase from "../../supabase/client";
+import SessionContext from "../../context/SessionContext";
 
 export default function Navbar() {
   const [searchInputValue, setSearchInputValue] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const navigate = useNavigate();
+  const { session, user } = useContext(SessionContext);
 
   function handleKey(event) {
     if (event.key === "Enter") {
@@ -27,6 +30,13 @@ export default function Navbar() {
       setSearchInputValue("");
     }
   }
+
+  async function signOut() {
+    await supabase.auth.signOut();
+  }
+
+  console.log(user);
+  console.log(session);
 
   return (
     <nav className={styles.navbar}>
@@ -61,6 +71,21 @@ export default function Navbar() {
               <Heart />
             </button>
             <div className={styles.navDivider}></div>
+            {!session ? (
+              <>
+                <div>
+                  <Link to="/register">Register</Link>
+                </div>
+                <div>
+                  <Link to="/login">Login</Link>
+                </div>
+              </>
+            ) : (
+              <div>
+                <button onClick={signOut}>Logout</button>
+              </div>
+            )}
+
             <div className={styles.userAvatar}>
               <User />
             </div>
