@@ -1,15 +1,18 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { Search, BookOpen, Heart, User } from "lucide-react";
 import styles from "./navbar.module.css";
-import { createSearchParams, Link, useNavigate } from "react-router";
+import { createSearchParams, Link, useLocation, useNavigate } from "react-router";
 import supabase from "../../supabase/client";
 import SessionContext from "../../context/SessionContext";
 
 export default function Navbar() {
   const [searchInputValue, setSearchInputValue] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const location = useLocation();
   const navigate = useNavigate();
   const { session, user } = useContext(SessionContext);
+  const dropdownRef = useRef(null);
 
   function handleKey(event) {
     if (event.key === "Enter") {
@@ -31,12 +34,27 @@ export default function Navbar() {
     }
   }
 
-  async function signOut() {
-    await supabase.auth.signOut();
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  function handleDropdown(event) {
+    event.preventDefault();
+    setIsDropdownOpen(!isDropdownOpen);
   }
 
-  console.log(user);
-  console.log(session);
+  async function signOut() {
+    setIsDropdownOpen(false);
+    await supabase.auth.signOut();
+  }
 
   return (
     <nav className={styles.navbar}>
@@ -48,46 +66,51 @@ export default function Navbar() {
           </Link>
         </h1>
         <div className={styles.navbarControls}>
-          <div className={`${styles.searchContainer} ${isSearchFocused ? "focused" : ""}`}>
-            <input
-              type="text"
-              placeholder="Cerca anime..."
-              value={searchInputValue}
-              onFocus={() => setIsSearchFocused(true)}
-              onBlur={() => setIsSearchFocused(false)}
-              onKeyDown={handleKey}
-              onChange={(event) => setSearchInputValue(event.target.value)}
-              className={styles.searchInput}
-            />
-            <button className={styles.searchButton} onClick={handleSearch}>
-              <Search className={styles.searchIcon} />
-            </button>
-          </div>
+          {location.pathname !== "/search" && (
+            <div className={`${styles.searchContainer} ${isSearchFocused ? "focused" : ""}`}>
+              <input
+                type="text"
+                placeholder="Cerca anime..."
+                value={searchInputValue}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                onKeyDown={handleKey}
+                onChange={(event) => setSearchInputValue(event.target.value)}
+                className={styles.searchInput}
+              />
+              <button className={styles.searchButton} onClick={handleSearch}>
+                <Search className={styles.searchIcon} />
+              </button>
+            </div>
+          )}
           <div className={styles.navControls}>
-            <button className={styles.navButton}>
+            <Link to="/search" className={styles.navButton}>
               <BookOpen />
-            </button>
+            </Link>
             <button className={styles.navButton}>
               <Heart />
             </button>
             <div className={styles.navDivider}></div>
-            {!session ? (
-              <>
-                <div>
-                  <Link to="/register">Register</Link>
-                </div>
-                <div>
-                  <Link to="/login">Login</Link>
-                </div>
-              </>
-            ) : (
-              <div>
-                <button onClick={signOut}>Logout</button>
-              </div>
-            )}
 
-            <div className={styles.userAvatar}>
-              <User />
+            <div className={session && styles.userAvatar}>
+              {!session ? (
+                <div>
+                  <Link to="/login" className={styles.login}>
+                    Login
+                  </Link>
+                </div>
+              ) : (
+                <>
+                  <User onClick={(event) => handleDropdown(event)} />
+                  <div ref={dropdownRef} className={`${styles.dropdownContainer} ${isDropdownOpen ? styles.show : null}`}>
+                    <div className={styles.profile}>Profilo</div>
+                    <hr style={{ marginBottom: "6px" }} />
+                    <div>
+                      <button onClick={signOut}>Logout</button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

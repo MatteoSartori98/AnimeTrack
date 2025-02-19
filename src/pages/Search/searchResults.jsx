@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import Filter from "../../components/Filter/filter";
 import { animeApi } from "../../services/api";
 import { useSearchParams } from "react-router";
+import Banner from "../../components/Banner/banner";
 
 export default function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -58,39 +59,48 @@ export default function SearchResults() {
   }
 
   return (
-    <div className={styles.container} style={{ marginRight: results.length == 0 ? "auto + 10" : "auto" }}>
-      <Toaster position="top-right" />
-      <Filter initialSearchQuery={searchQuery} onFilterSubmit={handleFilterSubmit} selectedFiltersIds={filterIds} />
-      {isLoading ? (
-        <div className={styles.loadingContainer}>
-          <span>Caricamento...</span>
-        </div>
-      ) : showList() ? (
-        <>
-          <div className={styles.container}>
-            {results.map((anime, index) => (
-              <SearchCard key={`${anime.mal_id}-${index}`} anime={anime} onGenreClick={onGenreClick} />
-            ))}
+    <>
+      <Banner />
+      <div className={styles.container} style={{ marginRight: results.length == 0 ? "auto + 10" : "auto" }}>
+        <Filter initialSearchQuery={searchQuery} onFilterSubmit={handleFilterSubmit} selectedFiltersIds={filterIds} />
+        {isLoading ? (
+          <div className={styles.loadingContainer}>
+            <span>Caricamento...</span>
           </div>
-          <div className={styles.pagination}>
-            <button onClick={handlePrevPage} disabled={page === 1}>
-              Precedente
-            </button>
-            <span>
-              Pagina {page} di {totalPages}
-            </span>
-            <button onClick={handleNextPage} disabled={page === totalPages}>
-              Successiva
-            </button>
+        ) : showList() ? (
+          <>
+            <div className={styles.container}>
+              {results.map((anime, index) => (
+                <SearchCard key={`${anime.mal_id}-${index}`} anime={anime} onGenreClick={onGenreClick} />
+              ))}
+            </div>
+            <div className={styles.pagination}>
+              <button onClick={handlePrevPage} disabled={page === 1}>
+                Precedente
+              </button>
+              <span>
+                Pagina {page} di {totalPages}
+              </span>
+              <button onClick={handleNextPage} disabled={page === totalPages}>
+                Successiva
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className={styles.emptyContainer}>
+            <p style={{ color: "white" }}>{isError ? "Si è verificato un errore. Riprova più tardi." : 'Inserisci una ricerca o seleziona dei filtri e clicca "Filtra"'}</p>
           </div>
-        </>
-      ) : (
-        <div className={styles.emptyContainer}>
-          <p style={{ color: "white" }}>
-            {isError ? "Si è verificato un errore. Riprova più tardi." : 'Inserisci una ricerca o seleziona dei filtri e clicca "Filtra"'}
-          </p>
-        </div>
-      )}
-    </div>
+        )}
+        <Toaster
+          containerStyle={{
+            top: 85,
+            right: 0,
+          }}
+          position="top-right"
+          reverseOrder={false}
+          style={{ marginTop: "50px" }}
+        />
+      </div>
+    </>
   );
 }

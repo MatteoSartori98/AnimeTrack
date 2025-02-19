@@ -11,6 +11,7 @@ import { animeApi } from "../../services/api";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, Star, Youtube, Clapperboard, ListVideo, BookText } from "lucide-react";
+import Banner from "../../components/Banner/banner";
 
 const possibleStatuses = {
   FINISHED_AIRING: "Finished Airing",
@@ -103,7 +104,8 @@ export default function Detail() {
 
   return (
     <>
-      <div className={styles.banner}></div>
+      <Banner />
+
       <div className={styles.container}>
         <div className={styles.row}>
           <div className={styles.leftBox}>
@@ -157,7 +159,7 @@ export default function Detail() {
 
             <div className={styles.bottom}>
               <div className={styles.infoBox}>
-                <h4> Studio: {episode.studios[0].name}</h4>
+                <h4> Studio: {episode.studios[0]?.name || "N/A"}</h4>
                 <h4> Stato: {createStatusTagbox(episode.status)}</h4>
                 <h4> Data di uscita: {formatDate(date)}</h4>
                 <h4> Episodi: {episodes.length === 0 ? "1" : episodes.length}</h4>
@@ -238,6 +240,7 @@ export default function Detail() {
               modules={[Navigation, Autoplay]}
               className={styles.swiper}
               slidesPerView={7}
+              style={{ marginLeft: "0" }}
             >
               {recommended.map((el) => (
                 <SwiperSlide key={el.entry.mal_id}>

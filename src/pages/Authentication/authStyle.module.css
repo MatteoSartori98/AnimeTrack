@@ -1,13 +1,16 @@
 .container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  height: 74vh;
+  margin: 200px auto 0;
+  z-index: 10;
+  position: relative;
 }
 
 .card {
   width: 100%;
   max-width: 420px;
+  max-height: 570px;
   padding: 48px 40px;
   background: #242a2f;
   border-radius: 6px;
@@ -19,16 +22,8 @@
   text-align: center;
 }
 
-.logo {
-  width: 48px;
-  height: 48px;
-  margin: 0 auto 16px;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  border-radius: 6px;
-}
-
 .title {
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 500;
   color: white;
   margin: 0;

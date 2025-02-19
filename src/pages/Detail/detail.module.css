@@ -11,15 +11,6 @@
   gap: 20px;
 }
 
-.banner {
-  background: linear-gradient(360deg, rgba(18, 22, 25, 1) 0%, rgba(253, 94, 83, 1) 40%, rgba(255, 173, 67, 1) 100%);
-
-  width: 100%;
-  position: absolute;
-  height: 300px;
-  z-index: 0;
-}
-
 .row {
   max-width: 1460px;
   display: flex;

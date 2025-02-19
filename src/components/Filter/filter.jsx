@@ -60,13 +60,7 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
     <div className={styles.componentContainer}>
       <div className={styles.filterContainer}>
         <div className={styles.inputSearch}>
-          <input
-            type="text"
-            placeholder="Cerca..."
-            value={actualSearchQuery}
-            onChange={(e) => setActualSearchQuery(e.target.value)}
-            onKeyDown={handleKeyPress}
-          />
+          <input type="text" placeholder="Cerca..." value={actualSearchQuery} onChange={(e) => setActualSearchQuery(e.target.value)} onKeyDown={handleKeyPress} />
         </div>
 
         <div className={styles.dropdownContainer} ref={dropdownRef}>

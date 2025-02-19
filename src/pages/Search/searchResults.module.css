@@ -6,6 +6,8 @@
   flex-direction: column;
   justify-content: start;
   margin: 0 auto;
+  position: relative;
+  z-index: 10;
   gap: 20px;
   h1 {
     color: red;

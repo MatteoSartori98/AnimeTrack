@@ -1,0 +1,16 @@
+.banner {
+  background-position: top center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  position: absolute;
+  height: 30%;
+  z-index: 0;
+}
+.bannerBackground {
+  z-index: 1;
+  width: 100%;
+  background: linear-gradient(360deg, rgba(18, 22, 25, 1) 0%, transparent);
+  position: absolute;
+  height: 30%;
+}

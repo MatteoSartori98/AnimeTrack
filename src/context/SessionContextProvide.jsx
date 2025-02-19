@@ -22,6 +22,7 @@ export default function SessionContextProvider({ children }) {
       subscription.unsubscribe();
     };
   }, []);
+
   useEffect(() => {
     async function getUserData() {
       const {

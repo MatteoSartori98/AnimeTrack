@@ -97,6 +97,7 @@
   justify-content: center;
   color: white;
   cursor: pointer;
+  position: relative;
 }
 
 button {
@@ -129,4 +130,71 @@ h1 {
 
 .searchIcon:hover {
   transform: scale(0.9);
+}
+
+/* Dropdown */
+
+.dropdownContainer {
+  width: 150px;
+  max-height: 0;
+  padding: 12px;
+  visibility: hidden;
+  display: flex;
+  opacity: 1;
+  position: absolute;
+  flex-direction: column;
+  gap: 10px;
+  top: 60px;
+  right: 0;
+  z-index: 9999;
+  background-color: #1c2125;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: visibility 0.2s ease, max-height 0.3s ease;
+  overflow: hidden;
+
+  .profile {
+    padding: 5px 10px 5px 2px;
+    border-radius: 2px;
+    transition: none;
+    width: 100%;
+  }
+
+  .profile:hover {
+    background-color: #2e353b;
+    transform: scale(0.98);
+    transition: transform 0.3s, background-color 0.3s;
+  }
+
+  button {
+    width: 100%;
+    padding: 5px 2px;
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    color: white;
+    border: 0;
+    border-radius: 2px;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+
+  button:hover {
+    transform: scale(0.98);
+    cursor: pointer;
+  }
+}
+
+.show {
+  visibility: visible;
+  opacity: 1;
+  max-height: 300px;
+}
+
+.login {
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  transition: 0.3s;
+}
+.login:hover {
+  color: #3b82f6;
 }
