@@ -8,6 +8,7 @@ import Detail from "./pages/Detail/detail.jsx";
 import SingUp from "./pages/Authentication/SignUp.jsx";
 import SingIn from "./pages/Authentication/SignIn.jsx";
 import SessionContextProvider from "./context/SessionContextProvide.jsx";
+import Profile from "./pages/Profile/profile.jsx";
 
 function Layout() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/search" element={<SearchResults />} />
             <Route path="/register" element={<SingUp />} />
             <Route path="/login" element={<SingIn />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
         </Routes>
       </BrowserRouter>

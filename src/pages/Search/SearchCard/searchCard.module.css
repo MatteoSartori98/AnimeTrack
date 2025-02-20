@@ -11,14 +11,17 @@
   color: white;
   cursor: pointer;
   transition: 0.3s;
+  border-radius: 4px;
 
   img {
     height: 280px;
     width: 180px;
     margin-right: 10px;
+    border-radius: 4px !important;
   }
   .shadow {
     height: 280px;
+    border-radius: 4px;
     width: 180px;
     position: absolute;
     background-color: rgba(0, 0, 0, 0.2);
@@ -41,6 +44,7 @@
     width: 100%;
     justify-content: space-evenly;
     padding: 10px 20px;
+    border-radius: 4px;
 
     .cardHeader {
       display: flex;

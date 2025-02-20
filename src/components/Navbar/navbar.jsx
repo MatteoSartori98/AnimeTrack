@@ -103,7 +103,9 @@ export default function Navbar() {
                 <>
                   <User onClick={(event) => handleDropdown(event)} />
                   <div ref={dropdownRef} className={`${styles.dropdownContainer} ${isDropdownOpen ? styles.show : null}`}>
-                    <div className={styles.profile}>Profilo</div>
+                    <Link to="/profile" className={styles.profile}>
+                      Profilo
+                    </Link>
                     <hr style={{ marginBottom: "6px" }} />
                     <div>
                       <button onClick={signOut}>Logout</button>

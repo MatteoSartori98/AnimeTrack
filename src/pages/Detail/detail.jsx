@@ -50,7 +50,6 @@ const fetchAnimeDetails = async (animeID) => {
 
 export default function Detail() {
   const location = useLocation();
-  const navigate = useNavigate();
   const [episode, setEpisode] = useState(location.state?.episode);
   const [isExpanded, setIsExpanded] = useState(false);
 
