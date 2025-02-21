@@ -1,8 +1,13 @@
 import { useContext, useState } from "react";
 import styles from "./profile.module.css";
-import SessionContext from "../../context/SessionContext";
-import { Calendar, Heart, Mail, Star, UserRoundPen, X } from "lucide-react";
 import Banner from "../../components/Banner/banner";
+import { Calendar, Heart, Mail, Star, Trash2, UserRoundPen, X } from "lucide-react";
+import SessionContext from "../../context/Session/SessionContext";
+import FavouritesContext from "../../context/Favourites/FavouritesContext";
+import { animeApi } from "../../services/api";
+import { useQueries } from "@tanstack/react-query";
+import toast, { Toaster } from "react-hot-toast";
+import supabase from "../../supabase/client";
 
 const avatars = ["/media/avatar2.jpg", "/media/avatar3.jpg", "/media/avatar4.jpg", "/media/avatar5.jpg"];
 
@@ -11,13 +16,32 @@ export default function Profile() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [avatar, setAvatar] = useState("/media/avatarDefault.png");
-  const [bio, setBio] = useState("Scrivi qualcosa su di te....");
-  const [editedBio, setEditedBio] = useState("Scrivi qualcosa su di te....");
-  const user = useContext(SessionContext);
+  const [bio, setBio] = useState("Nessuna descrizione ;(");
+  const [editedBio, setEditedBio] = useState("");
+  const session = useContext(SessionContext) || { user: null };
 
-  if (user.user === null) return console.log("no user");
+  const { favourites, setFavourites } = useContext(FavouritesContext);
 
-  const data = new Date(user.user.created_at);
+  const queryResults = useQueries({
+    queries: favourites.map((fav) => ({
+      queryKey: ["animeFavourites", fav.anime_id],
+      queryFn: () =>
+        animeApi.getAnimeData({
+          animeID: fav.anime_id,
+        }),
+      enabled: !!fav.anime_id,
+    })),
+  });
+
+  const getAnimeData = queryResults.map((result) => result.data);
+  const isLoading = queryResults.some((result) => result.isLoading);
+  const error = queryResults.find((result) => result.error);
+
+  console.log(getAnimeData, isLoading, error);
+
+  if (session.user === null) return console.log("no user");
+
+  const data = new Date(session.user.created_at);
 
   const dataFormattata = data.toLocaleDateString("it-IT", {
     year: "numeric",
@@ -27,32 +51,52 @@ export default function Profile() {
 
   function editProfile(event) {
     event.preventDefault();
+
     setIsModalOpen(true);
     setIsEditing(true);
   }
 
   function handleCloseModal(event) {
     event.preventDefault();
+
     setIsEditing(false);
     setIsModalOpen(false);
     setSelectedAvatar(null);
-    editedBio(bio);
+    setEditedBio(bio);
+    toast.error("Modifiche annullate");
   }
 
   function handleConfirm(event) {
     event.preventDefault();
+
     if (selectedAvatar) {
       setAvatar(selectedAvatar);
     }
-    setBio(editedBio);
+
+    setBio(editedBio !== "" ? editedBio : bio);
     setIsEditing(false);
     setIsModalOpen(false);
     setSelectedAvatar(null);
+    toast.success("Profilo modificato");
   }
 
   function handleAvatarSelection(src) {
     setSelectedAvatar(src);
   }
+
+  async function handleRemoveFromFavourites(anime_id) {
+    const { error } = await supabase.from("favourites").delete().eq("anime_id", anime_id).eq("profile_id", session.user.id);
+
+    if (error) {
+      toast.error("Errore nella rimozione");
+    } else {
+      const newFavourites = favourites.filter((fav) => fav.anime_id !== anime_id);
+      setFavourites(newFavourites);
+      toast.success("Anime rimosso dai preferiti");
+    }
+  }
+
+  console.log(isModalOpen);
 
   return (
     <>
@@ -101,11 +145,11 @@ export default function Profile() {
           </button>
           <div className={styles.headerBody}>
             <div style={{ display: "flex", gap: "15px", flexDirection: "column" }}>
-              <div style={{ display: "flex", gap: "5px", alignItems: "center", fontSize: "22px" }}>{user.user.user_metadata.username}</div>
+              <div style={{ display: "flex", gap: "5px", alignItems: "center", fontSize: "22px" }}>{session.user.user_metadata.username}</div>
               <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
                 <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
                   <Mail />
-                  {user.user.user_metadata.email}
+                  {session.user.user_metadata.email}
                 </div>
                 <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
                   <Calendar />
@@ -129,7 +173,67 @@ export default function Profile() {
             </div>
           </div>
         </div>
+
+        <div className={styles.favourites}>
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : error ? (
+            <p>Error: {error.message}</p>
+          ) : (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Copertina</th>
+                    <th>Titolo</th>
+                    <th>Voto</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getAnimeData.length > 0 ? (
+                    <>
+                      {getAnimeData.map((anime, index) => (
+                        <tr key={index}>
+                          <td className={styles.coverCell}>
+                            <img src={anime?.data.images.jpg.large_image_url} alt={anime?.title} className={styles.coverImage} />
+                          </td>
+                          <td>{anime?.data.title}</td>
+                          <td>
+                            <div className={styles.rating}>
+                              <span className={styles.star}>{anime?.data.score}</span>
+                            </div>
+                          </td>
+                          <td>
+                            <div style={{ display: "flex", justifyContent: "center" }}>
+                              <button className={styles.removeButton} aria-label={`Remove ${anime?.title}`}>
+                                <Trash2 className={styles.trashIcon} height={25} width={25} onClick={() => handleRemoveFromFavourites(anime.data.mal_id)} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </>
+                  ) : (
+                    <tr>
+                      <div style={{ width: "100%", padding: "20px 10px" }}>Non ci anime tra i tuoi preferiti...</div>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
+      <Toaster
+        containerStyle={{
+          top: 85,
+          right: 0,
+        }}
+        position="bottom-center"
+        reverseOrder={false}
+        style={{ marginTop: "50px" }}
+      />
     </>
   );
 }

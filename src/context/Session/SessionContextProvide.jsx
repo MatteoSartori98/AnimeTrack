@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
-import supabase from "../supabase/client";
+import supabase from "../../supabase/client";
 import SessionContext from "./SessionContext";
 
 export default function SessionContextProvider({ children }) {

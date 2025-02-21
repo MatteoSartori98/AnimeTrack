@@ -3,7 +3,9 @@ import { Search, BookOpen, Heart, User } from "lucide-react";
 import styles from "./navbar.module.css";
 import { createSearchParams, Link, useLocation, useNavigate } from "react-router";
 import supabase from "../../supabase/client";
-import SessionContext from "../../context/SessionContext";
+import SessionContext from "../../context/Session/SessionContext";
+
+const avatars = ["/media/avatar2.jpg", "/media/avatar3.jpg", "/media/avatar4.jpg", "/media/avatar5.jpg"];
 
 export default function Navbar() {
   const [searchInputValue, setSearchInputValue] = useState("");
@@ -101,7 +103,9 @@ export default function Navbar() {
                 </div>
               ) : (
                 <>
-                  <User onClick={(event) => handleDropdown(event)} />
+                  <div className={styles.avatar} onClick={(event) => handleDropdown(event)}>
+                    <img src={"/media/avatarDefault.png"} alt="Profile avatar" />
+                  </div>
                   <div ref={dropdownRef} className={`${styles.dropdownContainer} ${isDropdownOpen ? styles.show : null}`}>
                     <Link to="/profile" className={styles.profile}>
                       Profilo

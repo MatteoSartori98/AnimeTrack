@@ -5,13 +5,17 @@ import "swiper/css/navigation";
 import "swiper/css/autoplay";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { createSearchParams, Link, useNavigate } from "react-router";
+import { createSearchParams, Link } from "react-router";
 import { useLocation } from "react-router";
 import { animeApi } from "../../services/api";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Heart, Star, Youtube, Clapperboard, ListVideo, BookText } from "lucide-react";
 import Banner from "../../components/Banner/banner";
+import supabase from "../../supabase/client";
+import SessionContext from "../../context/Session/SessionContext";
+import toast, { Toaster } from "react-hot-toast";
+import FavouritesContext from "../../context/Favourites/FavouritesContext";
 
 const possibleStatuses = {
   FINISHED_AIRING: "Finished Airing",
@@ -52,6 +56,50 @@ export default function Detail() {
   const location = useLocation();
   const [episode, setEpisode] = useState(location.state?.episode);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
+  const { session } = useContext(SessionContext);
+  const { favourites, setFavourites } = useContext(FavouritesContext);
+
+  function isAlreadyFavourite() {
+    return favourites.find((el) => el.anime_id === episode.mal_id);
+  }
+
+  useEffect(() => {
+    if (episode) {
+      setIsFilled(isAlreadyFavourite());
+    }
+  }, [episode, favourites]);
+
+  async function handleAddToFavourites(episode) {
+    if (isAlreadyFavourite(episode.mal_id)) {
+      return toast.error("Anime già aggiunto.");
+    }
+
+    const { error } = await supabase
+      .from("favourites")
+      .insert([{ profile_id: session.user.id, anime_id: episode.mal_id, anime_title: episode.title }])
+      .select();
+
+    if (error) {
+      toast.error("Azione fallita.");
+    } else {
+      toast.success("Anime aggiunto ai preferiti!");
+      setIsFilled(true);
+      setFavourites((prevFavourites) => [...prevFavourites, { anime_id: episode.mal_id, anime_title: episode.title }]);
+    }
+  }
+
+  async function handleRemoveFromFavourites(episode) {
+    const { error } = await supabase.from("favourites").delete().eq("anime_id", episode.mal_id).eq("profile_id", session.user.id);
+
+    if (error) {
+      toast.error("Errore nella rimozione");
+    } else {
+      toast.success("Anime rimosso dai preferiti");
+      setIsFilled(false);
+      setFavourites((prevFavourites) => prevFavourites.filter((fav) => fav.anime_id !== episode.mal_id));
+    }
+  }
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["animeEpisodesURL", episode.mal_id],
@@ -133,9 +181,18 @@ export default function Detail() {
             </div>
             <div className={styles.preferiteBox}>
               <h4 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px" }}>Aggiungi ai preferiti</h4>
-              <div className={styles.preferite}>
-                <Heart width={33} height={33} />
-              </div>
+              <button
+                className={styles.preferite}
+                onClick={() => {
+                  if (!isAlreadyFavourite(episode.mal_id)) {
+                    return handleAddToFavourites(episode);
+                  } else {
+                    return handleRemoveFromFavourites(episode);
+                  }
+                }}
+              >
+                <Heart width={33} height={33} fill={isFilled ? "red" : "none"} color={isFilled ? "red" : "white"} />
+              </button>
             </div>
             <div className={styles.scoreBox}>
               <h4 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px" }}>Vota</h4>
@@ -265,6 +322,15 @@ export default function Detail() {
           </div>
         )}
       </div>
+      <Toaster
+        containerStyle={{
+          top: 85,
+          right: 0,
+        }}
+        position="bottom-center"
+        reverseOrder={false}
+        style={{ marginTop: "50px" }}
+      />
     </>
   );
 }

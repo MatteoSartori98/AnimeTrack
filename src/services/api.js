@@ -14,6 +14,8 @@ export const animeApi = {
   },
 
   getAllEpisodesURL: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}/episodes`).then((res) => res.json()),
+
   getRecommendedAnime: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}/recommendations`).then((res) => res.json()),
+
   getAnimeData: ({ animeID = "" }) => fetch(`${BASE_URL}/anime/${animeID}`).then((res) => res.json()),
 };

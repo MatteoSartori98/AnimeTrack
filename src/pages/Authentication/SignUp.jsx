@@ -3,7 +3,7 @@ import styles from "./authStyle.module.css";
 import supabase from "../../supabase/client";
 import toast, { Toaster } from "react-hot-toast";
 import Banner from "../../components/Banner/banner";
-import SessionContext from "../../context/SessionContext";
+import SessionContext from "../../context/Session/SessionContext";
 import { useContext, useEffect } from "react";
 
 export default function SignUp() {
@@ -90,7 +90,7 @@ export default function SignUp() {
               top: 85,
               right: 0,
             }}
-            position="top-right"
+            position="bottom-center"
             reverseOrder={false}
             style={{ marginTop: "50px" }}
           />

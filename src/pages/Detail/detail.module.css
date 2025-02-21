@@ -169,7 +169,7 @@ a {
 }
 
 .episodeButton:hover {
-  transform: scale(0.98);
+  transform: scale(0.96);
   background-color: rgb(47, 52, 58);
 }
 
@@ -184,6 +184,17 @@ a {
   border-radius: 4px;
   justify-content: center;
   align-items: center;
+}
+
+.preferite {
+  border: 0;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.preferite:hover {
+  transform: scale(0.97);
 }
 
 .trailer {

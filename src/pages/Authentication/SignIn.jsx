@@ -4,12 +4,12 @@ import supabase from "../../supabase/client";
 import toast, { Toaster } from "react-hot-toast";
 import { useState, useEffect, useContext } from "react";
 import Banner from "../../components/Banner/banner";
-import SessionContext from "../../context/SessionContext";
+import SessionContext from "../../context/Session/SessionContext";
 
 export default function SignIn() {
   const [dataa, setData] = useState("");
   const navigate = useNavigate();
-  const { user } = useContext(SessionContext);
+  const { session } = useContext(SessionContext);
 
   async function handleSignIn(event) {
     event.preventDefault();
@@ -31,14 +31,14 @@ export default function SignIn() {
 
   useEffect(() => {
     const checkUser = async () => {
-      if (user) {
-        console.log(user);
+      if (session) {
+        console.log(session);
         navigate("/");
       }
     };
 
     checkUser();
-  }, [navigate, user]);
+  }, [navigate, session]);
 
   return (
     <>
@@ -91,7 +91,7 @@ export default function SignIn() {
             top: 85,
             right: 0,
           }}
-          position="top-right"
+          position="bottom-center"
           reverseOrder={false}
           style={{ marginTop: "50px" }}
         />

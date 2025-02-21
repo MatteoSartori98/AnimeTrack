@@ -96,7 +96,7 @@ export default function SearchResults() {
             top: 85,
             right: 0,
           }}
-          position="top-right"
+          position="bottom-center"
           reverseOrder={false}
           style={{ marginTop: "50px" }}
         />

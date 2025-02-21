@@ -198,3 +198,15 @@ h1 {
 .login:hover {
   color: #3b82f6;
 }
+.avatar {
+  border-radius: 999999px;
+  background-color: white;
+  z-index: 11;
+  width: 33px;
+  height: 33px;
+  img {
+    width: 33px;
+    height: 33px;
+    border-radius: 9999px !important;
+  }
+}
