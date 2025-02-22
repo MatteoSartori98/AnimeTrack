@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import styles from "./profile.module.css";
 import Banner from "../../components/Banner/banner";
 import { Calendar, Heart, Mail, Star, Trash2, UserRoundPen, X } from "lucide-react";
@@ -13,11 +13,12 @@ import { Link } from "react-router";
 const avatars = ["/media/avatar2.jpg", "/media/avatar3.jpg", "/media/avatar4.jpg", "/media/avatar5.jpg"];
 
 export default function Profile() {
+  // eslint-disable-next-line no-unused-vars
   const [isEditing, setIsEditing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(null);
   const [avatar, setAvatar] = useState("/media/avatarDefault.png");
-  const [bio, setBio] = useState("Nessuna descrizione ;(");
+  const [bio, setBio] = useState("");
   const [editedBio, setEditedBio] = useState("");
   const [isFavourtiseOpened, setIsFavourtiseOpened] = useState(false);
   const [isReviewOpened, setIsReviewOpened] = useState(false);
@@ -40,6 +41,16 @@ export default function Profile() {
   const isLoading = queryResults.some((result) => result.isLoading);
   const error = queryResults.find((result) => result.error);
 
+  useEffect(() => {
+    const fetchUserBio = async () => {
+      let { data: user_Bio } = await supabase.from("profiles").select("user_bio").eq("id", session.user.id).single();
+      if (user_Bio) {
+        setBio(user_Bio.user_bio || "Nessuna descrizione ;(");
+      }
+    };
+    fetchUserBio();
+  }, [session.user.id]);
+
   if (session.user === null) return;
 
   const data = new Date(session.user.created_at);
@@ -52,18 +63,16 @@ export default function Profile() {
 
   function editProfile(event) {
     event.preventDefault();
-
     setIsModalOpen(true);
     setIsEditing(true);
   }
 
   function handleCloseModal(event) {
     event.preventDefault();
-
     setIsEditing(false);
     setIsModalOpen(false);
     setSelectedAvatar(null);
-    setEditedBio(bio);
+    setEditedBio(bio); // Resets the bio in the editor if closed without changes
     toast.error("Modifiche annullate");
   }
 
@@ -74,7 +83,12 @@ export default function Profile() {
       setAvatar(selectedAvatar);
     }
 
-    setBio(editedBio !== "" ? editedBio : bio);
+    const bioToUpdate = editedBio !== "" ? editedBio : bio;
+    setBio(bioToUpdate); // Update the local state immediately
+
+    // Update the bio in the database
+    handleModifyBio(bioToUpdate);
+
     setIsEditing(false);
     setIsModalOpen(false);
     setSelectedAvatar(null);
@@ -86,7 +100,7 @@ export default function Profile() {
   }
 
   async function handleRemoveFromFavourites(anime_id) {
-    const { error } = await supabase.from("favourites").delete().eq("anime_id", anime_id).eq("profile_id", session.user.id);
+    const { error } = await supabase.from("favourites").delete().eq("anime_id", anime_id).eq("id", session.user.id);
 
     if (error) {
       toast.error("Errore nella rimozione");
@@ -94,6 +108,16 @@ export default function Profile() {
       const newFavourites = favourites.filter((fav) => fav.anime_id !== anime_id);
       setFavourites(newFavourites);
       toast.success("Anime rimosso dai preferiti");
+    }
+  }
+
+  async function handleModifyBio(bio) {
+    const { error } = await supabase.from("profiles").update({ user_bio: bio }).eq("id", session.user.id);
+
+    if (error) {
+      toast.error("Errore nell'aggiornamento della bio");
+    } else {
+      toast.success("Bio aggiornata con successo");
     }
   }
 
@@ -109,6 +133,7 @@ export default function Profile() {
 
   return (
     <>
+      {/* Modal for editing profile */}
       {isModalOpen && (
         <div className={styles.modal}>
           <div className={styles.modalBody}>
@@ -117,7 +142,6 @@ export default function Profile() {
             </div>
             <div className={styles.avatarSection}>
               <h3>Modifica Avatar</h3>
-
               <div>
                 {avatars.map((el) => (
                   <button key={el} onClick={() => handleAvatarSelection(el)} className={styles.imageButton}>
@@ -142,6 +166,7 @@ export default function Profile() {
           </div>
         </div>
       )}
+
       <Banner />
       <div className={styles.container}>
         <div className={styles.header}>
@@ -244,6 +269,7 @@ export default function Profile() {
           </div>
         )}
       </div>
+
       <Toaster
         containerStyle={{
           top: 85,
