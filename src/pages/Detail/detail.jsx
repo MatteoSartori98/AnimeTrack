@@ -5,7 +5,7 @@ import "swiper/css/navigation";
 import "swiper/css/autoplay";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { createSearchParams, Link } from "react-router";
+import { createSearchParams, Link, useParams } from "react-router";
 import { useLocation } from "react-router";
 import { animeApi } from "../../services/api";
 import { useContext, useEffect, useState } from "react";
@@ -53,8 +53,8 @@ const fetchAnimeDetails = async (animeID) => {
 };
 
 export default function Detail() {
-  const location = useLocation();
-  const [episode, setEpisode] = useState(location.state?.episode);
+  const { id } = useParams();
+  const [episode, setEpisode] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
   const { session } = useContext(SessionContext);
@@ -63,6 +63,17 @@ export default function Detail() {
   function isAlreadyFavourite() {
     return favourites.find((el) => el.anime_id === episode.mal_id);
   }
+
+  useEffect(() => {
+    const getInitialData = async () => {
+      const data = await fetchAnimeDetails(id);
+      setEpisode(data);
+    };
+
+    if (id) {
+      getInitialData();
+    }
+  }, [id]);
 
   useEffect(() => {
     if (episode) {
@@ -102,23 +113,20 @@ export default function Detail() {
   }
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["animeEpisodesURL", episode.mal_id],
-    queryFn: () =>
-      animeApi.getAllEpisodesURL({
-        animeID: episode.mal_id,
-      }),
-    enabled: !!episode?.mal_id,
+    queryKey: ["animeEpisodesURL", id],
+    queryFn: () => animeApi.getAllEpisodesURL({ animeID: id }),
+    enabled: !!id,
   });
 
   const episodes = data?.data || [];
 
   const { data: recommendedData } = useQuery({
-    queryKey: ["animeRecommendations", episode.mal_id],
+    queryKey: ["animeRecommendations", id],
     queryFn: () =>
       animeApi.getRecommendedAnime({
-        animeID: episode.mal_id,
+        animeID: id,
       }),
-    enabled: !!episode?.mal_id,
+    enabled: !!id,
   });
 
   const recommended = recommendedData?.data || [];
