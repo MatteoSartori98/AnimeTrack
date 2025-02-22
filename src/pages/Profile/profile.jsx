@@ -8,6 +8,7 @@ import { animeApi } from "../../services/api";
 import { useQueries } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
 import supabase from "../../supabase/client";
+import { Link } from "react-router";
 
 const avatars = ["/media/avatar2.jpg", "/media/avatar3.jpg", "/media/avatar4.jpg", "/media/avatar5.jpg"];
 
@@ -18,6 +19,8 @@ export default function Profile() {
   const [avatar, setAvatar] = useState("/media/avatarDefault.png");
   const [bio, setBio] = useState("Nessuna descrizione ;(");
   const [editedBio, setEditedBio] = useState("");
+  const [isFavourtiseOpened, setIsFavourtiseOpened] = useState(false);
+  const [isReviewOpened, setIsReviewOpened] = useState(false);
   const session = useContext(SessionContext) || { user: null };
 
   const { favourites, setFavourites } = useContext(FavouritesContext);
@@ -37,9 +40,7 @@ export default function Profile() {
   const isLoading = queryResults.some((result) => result.isLoading);
   const error = queryResults.find((result) => result.error);
 
-  console.log(getAnimeData, isLoading, error);
-
-  if (session.user === null) return console.log("no user");
+  if (session.user === null) return;
 
   const data = new Date(session.user.created_at);
 
@@ -96,7 +97,15 @@ export default function Profile() {
     }
   }
 
-  console.log(isModalOpen);
+  function handleOpenInfo(button) {
+    if (button === "review") {
+      setIsFavourtiseOpened(false);
+      setIsReviewOpened(!isReviewOpened);
+    } else if (button === "favourites") {
+      setIsReviewOpened(false);
+      setIsFavourtiseOpened(!isFavourtiseOpened);
+    }
+  }
 
   return (
     <>
@@ -162,11 +171,11 @@ export default function Profile() {
               <p>{bio}</p>
             </div>
             <div className={styles.callToAction}>
-              <button>
+              <button onClick={() => handleOpenInfo("review")}>
                 <Star />
                 Recensioni
               </button>
-              <button>
+              <button onClick={() => handleOpenInfo("favourites")}>
                 <Heart />
                 Preferiti
               </button>
@@ -174,56 +183,66 @@ export default function Profile() {
           </div>
         </div>
 
-        <div className={styles.favourites}>
-          {isLoading ? (
-            <p>Loading...</p>
-          ) : error ? (
-            <p>Error: {error.message}</p>
-          ) : (
-            <div className={styles.tableWrapper}>
-              <table className={styles.table}>
-                <thead>
-                  <tr>
-                    <th>Copertina</th>
-                    <th>Titolo</th>
-                    <th>Voto</th>
-                    <th>Azioni</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {getAnimeData.length > 0 ? (
-                    <>
-                      {getAnimeData.map((anime, index) => (
+        {isFavourtiseOpened && (
+          <div className={styles.favourites}>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error.message}</p>
+            ) : (
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Copertina</th>
+                      <th>Titolo</th>
+                      <th>Voto</th>
+                      <th>Azioni</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getAnimeData.length > 0 ? (
+                      getAnimeData.map((anime, index) => (
                         <tr key={index}>
                           <td className={styles.coverCell}>
-                            <img src={anime?.data.images.jpg.large_image_url} alt={anime?.title} className={styles.coverImage} />
+                            <Link to={`/detail/${anime?.data.mal_id}`}>
+                              <img src={anime?.data.images.jpg.large_image_url} alt={anime?.data.title} className={styles.coverImage} />
+                            </Link>
                           </td>
-                          <td>{anime?.data.title}</td>
+                          <td>
+                            <Link style={{ color: "white" }} to={`/detail/${anime?.data.mal_id}`}>
+                              {anime?.data.title}
+                            </Link>
+                          </td>
                           <td>
                             <div className={styles.rating}>
-                              <span className={styles.star}>{anime?.data.score}</span>
+                              <span className={styles.star}>
+                                {anime?.data.score} <Star fill="gold" height={18} width={18} />
+                              </span>
                             </div>
                           </td>
                           <td>
                             <div style={{ display: "flex", justifyContent: "center" }}>
-                              <button className={styles.removeButton} aria-label={`Remove ${anime?.title}`}>
-                                <Trash2 className={styles.trashIcon} height={25} width={25} onClick={() => handleRemoveFromFavourites(anime.data.mal_id)} />
+                              <button className={styles.removeButton} aria-label={`Remove ${anime?.data.title}`} onClick={() => handleRemoveFromFavourites(anime.data.mal_id)}>
+                                <Trash2 className={styles.trashIcon} height={25} width={25} />
                               </button>
                             </div>
                           </td>
                         </tr>
-                      ))}
-                    </>
-                  ) : (
-                    <tr>
-                      <div style={{ width: "100%", padding: "20px 10px" }}>Non ci anime tra i tuoi preferiti...</div>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="4" style={{ textAlign: "center", padding: "20px 10px" }}>
+                          Non ci sono anime tra i tuoi preferiti...
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
       </div>
       <Toaster
         containerStyle={{

@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { Search, BookOpen, Heart, User } from "lucide-react";
+import { Search, BookOpen, Heart } from "lucide-react";
 import styles from "./navbar.module.css";
 import { createSearchParams, Link, useLocation, useNavigate } from "react-router";
 import supabase from "../../supabase/client";
@@ -13,6 +13,7 @@ export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  // eslint-disable-next-line no-unused-vars
   const { session, user } = useContext(SessionContext);
   const dropdownRef = useRef(null);
 
@@ -89,9 +90,7 @@ export default function Navbar() {
             <Link to="/search" className={styles.navButton}>
               <BookOpen />
             </Link>
-            <button className={styles.navButton}>
-              <Heart />
-            </button>
+
             <div className={styles.navDivider}></div>
 
             <div className={session && styles.userAvatar}>

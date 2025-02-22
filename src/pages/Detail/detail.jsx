@@ -6,11 +6,10 @@ import "swiper/css/autoplay";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { createSearchParams, Link, useParams } from "react-router";
-import { useLocation } from "react-router";
 import { animeApi } from "../../services/api";
 import { useContext, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, Star, Youtube, Clapperboard, ListVideo, BookText } from "lucide-react";
+import { Heart, Star, Clapperboard, ListVideo, BookText } from "lucide-react";
 import Banner from "../../components/Banner/banner";
 import supabase from "../../supabase/client";
 import SessionContext from "../../context/Session/SessionContext";
@@ -79,6 +78,7 @@ export default function Detail() {
     if (episode) {
       setIsFilled(isAlreadyFavourite());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [episode, favourites]);
 
   async function handleAddToFavourites(episode) {
@@ -303,7 +303,7 @@ export default function Detail() {
               autoplay={{ delay: 4000, disableOnInteraction: false }}
               modules={[Navigation, Autoplay]}
               className={styles.swiper}
-              slidesPerView={7}
+              slidesPerView={recommended.length >= 7 ? 7 : recommended.length}
               style={{ marginLeft: "0" }}
             >
               {recommended.map((el) => (

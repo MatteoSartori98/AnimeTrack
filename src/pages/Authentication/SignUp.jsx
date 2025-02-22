@@ -36,16 +36,6 @@ export default function SignUp() {
     console.log(data);
   }
 
-  useEffect(() => {
-    const checkUser = async () => {
-      if (user) {
-        navigate("/");
-      }
-    };
-
-    checkUser();
-  }, [navigate, user]);
-
   return (
     <>
       {!user && (

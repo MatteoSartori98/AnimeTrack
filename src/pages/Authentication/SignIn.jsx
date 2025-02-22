@@ -29,17 +29,6 @@ export default function SignIn() {
     setData(data);
   }
 
-  useEffect(() => {
-    const checkUser = async () => {
-      if (session) {
-        console.log(session);
-        navigate("/");
-      }
-    };
-
-    checkUser();
-  }, [navigate, session]);
-
   return (
     <>
       <Banner />

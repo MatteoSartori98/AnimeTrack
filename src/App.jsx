@@ -10,6 +10,8 @@ import SingIn from "./pages/Authentication/SignIn.jsx";
 import SessionContextProvider from "./context/Session/SessionContextProvide.jsx";
 import Profile from "./pages/Profile/profile.jsx";
 import FavContextProvider from "./context/Favourites/FavouritesContextProvider.jsx";
+import ProtectedRoute from "./components/ProtectedRoute/protectedRoute.jsx";
+import PublicRoute from "./components/PublicRoute/publicRoute.jsx";
 
 function Layout() {
   return (
@@ -30,9 +32,32 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/detail/:id" element={<Detail />} />
               <Route path="/search" element={<SearchResults />} />
-              <Route path="/register" element={<SingUp />} />
-              <Route path="/login" element={<SingIn />} />
-              <Route path="/profile" element={<Profile />} />
+              {/* <Route path="/register" element={<SingUp />} />
+              <Route path="/login" element={<SingIn />} /> */}
+              <Route
+                path="/register"
+                element={
+                  <PublicRoute>
+                    <SingUp />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <SingIn />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
           </Routes>
         </BrowserRouter>
