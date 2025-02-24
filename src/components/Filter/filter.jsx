@@ -79,7 +79,9 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
                     id={genre.mal_id}
                     checked={actualFiltersIds.some((filter) => filter === genre.mal_id)}
                   />
-                  <label htmlFor={genre.mal_id}>{genre.name}</label>
+                  <label style={{ cursor: "pointer" }} htmlFor={genre.mal_id}>
+                    {genre.name}
+                  </label>
                 </div>
               ))}
             </div>

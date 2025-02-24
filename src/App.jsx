@@ -12,6 +12,8 @@ import Profile from "./pages/Profile/profile.jsx";
 import FavContextProvider from "./context/Favourites/FavouritesContextProvider.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/protectedRoute.jsx";
 import PublicRoute from "./components/PublicRoute/publicRoute.jsx";
+import ReviewsContextProvider from "./context/Reviews/ReviewsContextProvider.jsx";
+import AvatarContextProvider from "./context/Avatar/AvatarContextProvider.jsx";
 
 function Layout() {
   return (
@@ -25,43 +27,45 @@ function Layout() {
 function App() {
   return (
     <SessionContextProvider>
-      <FavContextProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/detail/:id" element={<Detail />} />
-              <Route path="/search" element={<SearchResults />} />
-              {/* <Route path="/register" element={<SingUp />} />
-              <Route path="/login" element={<SingIn />} /> */}
-              <Route
-                path="/register"
-                element={
-                  <PublicRoute>
-                    <SingUp />
-                  </PublicRoute>
-                }
-              />
-              <Route
-                path="/login"
-                element={
-                  <PublicRoute>
-                    <SingIn />
-                  </PublicRoute>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                }
-              />
-            </Route>
-          </Routes>
-        </BrowserRouter>
-      </FavContextProvider>
+      <AvatarContextProvider>
+        <FavContextProvider>
+          <ReviewsContextProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route element={<Layout />}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/detail/:id" element={<Detail />} />
+                  <Route path="/search" element={<SearchResults />} />
+                  <Route
+                    path="/register"
+                    element={
+                      <PublicRoute>
+                        <SingUp />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/login"
+                    element={
+                      <PublicRoute>
+                        <SingIn />
+                      </PublicRoute>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Route>
+              </Routes>
+            </BrowserRouter>
+          </ReviewsContextProvider>
+        </FavContextProvider>
+      </AvatarContextProvider>
     </SessionContextProvider>
   );
 }

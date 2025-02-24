@@ -1,20 +1,19 @@
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import styles from "./authStyle.module.css";
 import supabase from "../../supabase/client";
 import toast, { Toaster } from "react-hot-toast";
 import Banner from "../../components/Banner/banner";
 import SessionContext from "../../context/Session/SessionContext";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 
 export default function SignUp() {
-  const navigate = useNavigate();
   const { user } = useContext(SessionContext);
 
   async function handleSubmit(event) {
     event.preventDefault();
     const formRegister = event.currentTarget;
     const { username, email, password } = Object.fromEntries(new FormData(formRegister));
-    let { data, error } = await supabase.auth.signUp({
+    let { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -32,8 +31,6 @@ export default function SignUp() {
       formRegister.reset();
       toast.success("Registrazione avvenuta con successo!");
     }
-
-    console.log(data);
   }
 
   return (

@@ -4,11 +4,13 @@ import Banner from "../../components/Banner/banner";
 import { Calendar, Heart, Mail, Star, Trash2, UserRoundPen, X } from "lucide-react";
 import SessionContext from "../../context/Session/SessionContext";
 import FavouritesContext from "../../context/Favourites/FavouritesContext";
+import ReviewsContext from "../../context/Reviews/ReviewsContext";
 import { animeApi } from "../../services/api";
 import { useQueries } from "@tanstack/react-query";
 import toast, { Toaster } from "react-hot-toast";
 import supabase from "../../supabase/client";
 import { Link } from "react-router";
+import AvatarContext from "../../context/Avatar/AvatarContext";
 
 const avatars = ["/media/avatar2.jpg", "/media/avatar3.jpg", "/media/avatar4.jpg", "/media/avatar5.jpg"];
 
@@ -20,11 +22,15 @@ export default function Profile() {
   const [avatar, setAvatar] = useState("/media/avatarDefault.png");
   const [bio, setBio] = useState("");
   const [editedBio, setEditedBio] = useState("");
-  const [isFavourtiseOpened, setIsFavourtiseOpened] = useState(false);
+  const [isFavouritesOpened, setIsFavouritesOpened] = useState(false);
   const [isReviewOpened, setIsReviewOpened] = useState(false);
+  const [userReviews, setUserReviews] = useState([]);
+  const [isReviewsLoading, setIsReviewsLoading] = useState(false);
   const session = useContext(SessionContext) || { user: null };
+  const { updateAvatar } = useContext(AvatarContext);
 
   const { favourites, setFavourites } = useContext(FavouritesContext);
+  const { setReview } = useContext(ReviewsContext);
 
   const queryResults = useQueries({
     queries: favourites.map((fav) => ({
@@ -37,19 +43,74 @@ export default function Profile() {
     })),
   });
 
+  const reviewQueryResults = useQueries({
+    queries: (userReviews || []).map((rev) => ({
+      queryKey: ["animeReviews", rev.anime_id],
+      queryFn: () =>
+        animeApi.getAnimeData({
+          animeID: rev.anime_id,
+        }),
+      enabled: !!rev.anime_id,
+    })),
+  });
+
   const getAnimeData = queryResults.map((result) => result.data);
+  const getReviewAnimeData = reviewQueryResults.map((result) => result.data);
   const isLoading = queryResults.some((result) => result.isLoading);
+  const isReviewDataLoading = reviewQueryResults.some((result) => result.isLoading);
   const error = queryResults.find((result) => result.error);
+  const reviewError = reviewQueryResults.find((result) => result.error);
 
   useEffect(() => {
-    const fetchUserBio = async () => {
-      let { data: user_Bio } = await supabase.from("profiles").select("user_bio").eq("id", session.user.id).single();
-      if (user_Bio) {
-        setBio(user_Bio.user_bio || "Nessuna descrizione ;(");
+    const fetchUserDetails = async () => {
+      let { data: userDetails } = await supabase.from("profiles").select("avatar_url, user_bio").eq("id", session.user.id).single();
+      if (userDetails) {
+        setAvatar(userDetails.avatar_url || "/media/avatarDefault.png");
+        setBio(userDetails.user_bio || "Nessuna descrizione ;(");
       }
     };
-    fetchUserBio();
-  }, [session.user.id]);
+
+    if (session.user?.id) {
+      fetchUserDetails();
+    }
+  }, [session.user?.id]);
+
+  useEffect(() => {
+    const fetchUserReviews = async () => {
+      setIsReviewsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("reviews")
+          .select(
+            `
+            id,
+            anime_id,
+            description,
+            score,
+            created_at
+          `
+          )
+          .eq("profile_id", session.user.id)
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Error fetching reviews:", error);
+          return;
+        }
+
+        setUserReviews(data || []);
+        setReview(data || []);
+      } catch (error) {
+        console.error("Unexpected error:", error);
+      } finally {
+        setIsReviewsLoading(false);
+      }
+    };
+
+    if (session.user?.id && isReviewOpened) {
+      fetchUserReviews();
+    }
+  }, [session.user?.id, isReviewOpened, setReview]);
 
   if (session.user === null) return;
 
@@ -72,27 +133,29 @@ export default function Profile() {
     setIsEditing(false);
     setIsModalOpen(false);
     setSelectedAvatar(null);
-    setEditedBio(bio); // Resets the bio in the editor if closed without changes
+    setEditedBio(bio);
     toast.error("Modifiche annullate");
   }
 
   function handleConfirm(event) {
     event.preventDefault();
 
-    if (selectedAvatar) {
-      setAvatar(selectedAvatar);
+    if (!selectedAvatar) {
+      toast.error("Seleziona un avatar prima di confermare.");
+      return;
     }
 
-    const bioToUpdate = editedBio !== "" ? editedBio : bio;
-    setBio(bioToUpdate); // Update the local state immediately
+    updateAvatar(selectedAvatar);
+    handleModifyAvatar(selectedAvatar);
 
-    // Update the bio in the database
+    const bioToUpdate = editedBio !== "" ? editedBio : bio;
+    setBio(bioToUpdate);
     handleModifyBio(bioToUpdate);
 
     setIsEditing(false);
     setIsModalOpen(false);
     setSelectedAvatar(null);
-    toast.success("Profilo modificato");
+    toast.success("Profilo modificato!");
   }
 
   function handleAvatarSelection(src) {
@@ -100,7 +163,7 @@ export default function Profile() {
   }
 
   async function handleRemoveFromFavourites(anime_id) {
-    const { error } = await supabase.from("favourites").delete().eq("anime_id", anime_id).eq("id", session.user.id);
+    const { error } = await supabase.from("favourites").delete().eq("anime_id", anime_id).eq("profile_id", session.user.id);
 
     if (error) {
       toast.error("Errore nella rimozione");
@@ -111,29 +174,69 @@ export default function Profile() {
     }
   }
 
+  async function handleRemoveReview(review_id) {
+    const { error } = await supabase.from("reviews").delete().eq("id", review_id);
+
+    if (error) {
+      toast.error("Errore nella rimozione della recensione");
+    } else {
+      const newReviews = userReviews.filter((rev) => rev.id !== review_id);
+      setUserReviews(newReviews);
+      setReview(newReviews);
+      toast.success("Recensione rimossa con successo");
+    }
+  }
+
   async function handleModifyBio(bio) {
     const { error } = await supabase.from("profiles").update({ user_bio: bio }).eq("id", session.user.id);
 
     if (error) {
       toast.error("Errore nell'aggiornamento della bio");
+    }
+  }
+  async function handleModifyAvatar(newAvatar) {
+    let { data: user, error: fetchError } = await supabase.from("profiles").select("avatar_url").eq("id", session.user.id).single();
+
+    if (fetchError) {
+      toast.error("Errore nel recupero dell'avatar.");
+      return;
+    }
+
+    if (user?.avatar_url && user.avatar_url !== newAvatar) {
+      const fileName = user.avatar_url.split("/").pop();
+
+      const { error: error } = await supabase.storage.from("avatars").remove([fileName]);
+    }
+
+    const { error: updateError } = await supabase.from("profiles").update({ avatar_url: newAvatar }).eq("id", session.user.id);
+
+    if (updateError) {
+      toast.error("Errore nell'aggiornamento dell'avatar.");
     } else {
-      toast.success("Bio aggiornata con successo");
+      setAvatar(newAvatar);
     }
   }
 
   function handleOpenInfo(button) {
     if (button === "review") {
-      setIsFavourtiseOpened(false);
+      setIsFavouritesOpened(false);
       setIsReviewOpened(!isReviewOpened);
     } else if (button === "favourites") {
       setIsReviewOpened(false);
-      setIsFavourtiseOpened(!isFavourtiseOpened);
+      setIsFavouritesOpened(!isFavouritesOpened);
     }
+  }
+
+  function renderStars(score) {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(<Star key={i} width={16} height={16} fill={i <= score ? "yellow" : "none"} color={i <= score ? "yellow" : "white"} />);
+    }
+    return stars;
   }
 
   return (
     <>
-      {/* Modal for editing profile */}
       {isModalOpen && (
         <div className={styles.modal}>
           <div className={styles.modalBody}>
@@ -208,12 +311,12 @@ export default function Profile() {
           </div>
         </div>
 
-        {isFavourtiseOpened && (
+        {isFavouritesOpened && (
           <div className={styles.favourites}>
             {isLoading ? (
-              <p>Loading...</p>
+              <p>Caricamento...</p>
             ) : error ? (
-              <p>Error: {error.message}</p>
+              <p>Errore: {error.message}</p>
             ) : (
               <div className={styles.tableWrapper}>
                 <table className={styles.table}>
@@ -257,8 +360,74 @@ export default function Profile() {
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" style={{ textAlign: "center", padding: "20px 10px" }}>
+                        <td colSpan="6" style={{ textAlign: "center", padding: "20px 10px" }}>
                           Non ci sono anime tra i tuoi preferiti...
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {isReviewOpened && (
+          <div className={styles.reviews}>
+            {isReviewsLoading || isReviewDataLoading ? (
+              <p>Caricamento...</p>
+            ) : reviewError ? (
+              <p>Errore: {reviewError.message}</p>
+            ) : (
+              <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                  <thead>
+                    <tr>
+                      <th>Copertina</th>
+                      <th>Titolo</th>
+                      <th>Recensione</th>
+                      <th>Voto</th>
+                      <th>Data</th>
+                      <th>Azioni</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getReviewAnimeData.length > 0 ? (
+                      getReviewAnimeData.map((anime, index) => {
+                        const review = userReviews.find((rev) => rev.anime_id === anime?.data.mal_id);
+                        return (
+                          <tr key={index}>
+                            <td className={styles.coverCell}>
+                              <Link to={`/detail/${anime?.data.mal_id}`}>
+                                <img src={anime?.data.images.jpg.large_image_url} alt={anime?.data.title} className={styles.coverImage} />
+                              </Link>
+                            </td>
+                            <td>
+                              <Link style={{ color: "white" }} to={`/detail/${anime?.data.mal_id}`}>
+                                {anime?.data.title}
+                              </Link>
+                            </td>
+                            <td className={styles.reviewDescription}>{review?.description ? review.description : "Nessuna descrizione"}</td>
+                            <td>
+                              <div className={styles.rating}>
+                                <div className={styles.reviewScore}>{renderStars(review?.score || 0)}</div>
+                              </div>
+                            </td>
+                            <td>{new Date(review?.created_at).toLocaleDateString()}</td>
+                            <td>
+                              <div style={{ display: "flex", justifyContent: "center" }}>
+                                <button className={styles.removeButton} aria-label={`Remove review for ${anime?.data.title}`} onClick={() => handleRemoveReview(review?.id)}>
+                                  <Trash2 className={styles.trashIcon} height={25} width={25} />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan="6" style={{ textAlign: "center", padding: "20px 10px" }}>
+                          Non hai ancora recensito alcun anime...
                         </td>
                       </tr>
                     )}

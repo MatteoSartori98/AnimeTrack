@@ -1,11 +1,10 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import { Search, BookOpen, Heart } from "lucide-react";
+import { Search, BookOpen } from "lucide-react";
 import styles from "./navbar.module.css";
 import { createSearchParams, Link, useLocation, useNavigate } from "react-router";
 import supabase from "../../supabase/client";
 import SessionContext from "../../context/Session/SessionContext";
-
-const avatars = ["/media/avatar2.jpg", "/media/avatar3.jpg", "/media/avatar4.jpg", "/media/avatar5.jpg"];
+import AvatarContext from "../../context/Avatar/AvatarContext";
 
 export default function Navbar() {
   const [searchInputValue, setSearchInputValue] = useState("");
@@ -13,9 +12,35 @@ export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  // eslint-disable-next-line no-unused-vars
   const { session, user } = useContext(SessionContext);
   const dropdownRef = useRef(null);
+  const [avatar, setAvatar] = useState(null);
+  const { avatarUrl } = useContext(AvatarContext);
+
+  async function getAvatar() {
+    if (!session || !session.user) return null;
+
+    let { data, error } = await supabase.from("profiles").select("avatar_url").eq("id", session.user.id).single();
+
+    if (error) {
+      return null;
+    }
+
+    return data?.avatar_url;
+  }
+
+  async function showAvatar() {
+    if (session && session.user) {
+      const avatarUrl = await getAvatar();
+      setAvatar(avatarUrl);
+    }
+  }
+
+  useEffect(() => {
+    if (session && session.user) {
+      showAvatar();
+    }
+  }, [session]);
 
   function handleKey(event) {
     if (event.key === "Enter") {
@@ -88,7 +113,7 @@ export default function Navbar() {
           )}
           <div className={styles.navControls}>
             <Link to="/search" className={styles.navButton}>
-              <BookOpen />
+              <BookOpen height={28} width={28} />
             </Link>
 
             <div className={styles.navDivider}></div>
@@ -103,15 +128,18 @@ export default function Navbar() {
               ) : (
                 <>
                   <div className={styles.avatar} onClick={(event) => handleDropdown(event)}>
-                    <img src={"/media/avatarDefault.png"} alt="Profile avatar" />
+                    <img src={avatarUrl || "/media/avatarDefault.png"} alt="Profile avatar" />
                   </div>
                   <div ref={dropdownRef} className={`${styles.dropdownContainer} ${isDropdownOpen ? styles.show : null}`}>
                     <Link to="/profile" className={styles.profile}>
                       Profilo
                     </Link>
-                    <hr style={{ marginBottom: "6px" }} />
+                    <Link className={styles.profile}>About</Link>
+                    <hr style={{ marginBottom: "6px", marginTop: "6px" }} />
                     <div>
-                      <button onClick={signOut}>Logout</button>
+                      <button style={{ display: "flex" }} onClick={signOut}>
+                        Logout
+                      </button>
                     </div>
                   </div>
                 </>

@@ -66,7 +66,19 @@
     border-radius: 4px;
   }
 }
-
+.headers {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+.descriptionBox {
+  background-color: #1c2125;
+  padding: 16px;
+  border-radius: 6px;
+}
 .bottomBox {
   display: flex;
   flex-direction: column;
@@ -109,7 +121,6 @@ a {
   background-color: #1c2125;
   padding: 16px;
   border-radius: 4px;
-  gap: 20px;
 }
 
 .tagBox {
@@ -140,22 +151,16 @@ a {
   }
 }
 
-.descriptionBox {
-  background-color: #1c2125;
-  padding: 16px;
-  border-radius: 4px;
-}
-
 .episodesBox {
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
   background-color: #1c2125;
   padding: 16px;
-  gap: 25px;
   margin: 0 auto !important;
   border-radius: 4px;
 }
+
 .episodeButton {
   width: 206px !important;
   background-color: rgb(52, 58, 64);
@@ -184,6 +189,48 @@ a {
   border-radius: 4px;
   justify-content: center;
   align-items: center;
+}
+
+.reviewBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.reviewTextarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 120px;
+  transition: border-color 0.3s ease;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.reviewTextarea:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.addReviewButton {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.addReviewButton:hover {
+  transform: scale(0.98);
+  background: linear-gradient(135deg, #3b83f6de, #8a5cf6e7);
 }
 
 .preferite {
@@ -217,14 +264,17 @@ a {
   background-color: #cc0000;
   transform: scale(0.98);
 }
+
 .score {
   border-radius: 4px;
   display: flex;
+  justify-content: center;
   padding: 16px;
   font-size: 16px;
   background-color: #242a2f;
-  margin-bottom: 10px;
+  gap: 6px;
 }
+
 .preferite {
   border-radius: 4px;
   display: flex;

@@ -21,7 +21,7 @@ export default function Popular() {
     }
   }, [data, visibleEpisodes]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Caricamento...</div>;
   if (isError) return <p className="error-text">Failed to load popular anime</p>;
 
   const populars = data?.data || [];

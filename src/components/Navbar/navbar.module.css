@@ -69,6 +69,7 @@
 }
 
 .navButton {
+  display: flex;
   color: white;
   background: none;
   border: none;
@@ -143,7 +144,6 @@ h1 {
   opacity: 1;
   position: absolute;
   flex-direction: column;
-  gap: 10px;
   top: 60px;
   right: 0;
   z-index: 9999;
@@ -158,6 +158,7 @@ h1 {
     border-radius: 2px;
     transition: none;
     width: 100%;
+    color: white;
   }
 
   .profile:hover {
@@ -168,16 +169,21 @@ h1 {
 
   button {
     width: 100%;
-    padding: 5px 2px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    padding: 5px 10px 5px 2px;
+    background: none;
     color: white;
     border: 0;
     border-radius: 2px;
     transition: 0.3s;
+    font-size: 16px;
+    text-align: start;
     cursor: pointer;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
   button:hover {
+    background-color: #2e353b;
+
     transform: scale(0.98);
     cursor: pointer;
   }
@@ -195,18 +201,20 @@ h1 {
   color: white;
   transition: 0.3s;
 }
+
 .login:hover {
   color: #3b82f6;
 }
+
 .avatar {
   border-radius: 999999px;
-  background-color: white;
   z-index: 11;
-  width: 33px;
-  height: 33px;
+  width: 40px;
+  height: 40px;
   img {
-    width: 33px;
-    height: 33px;
+    width: 40px;
+    height: 40px;
     border-radius: 9999px !important;
+    border: 2px solid #3b82f6;
   }
 }

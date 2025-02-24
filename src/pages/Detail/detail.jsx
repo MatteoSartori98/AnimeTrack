@@ -9,12 +9,14 @@ import { createSearchParams, Link, useParams } from "react-router";
 import { animeApi } from "../../services/api";
 import { useContext, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, Star, Clapperboard, ListVideo, BookText } from "lucide-react";
+import { Heart, Star, Clapperboard, ListVideo, BookText, Tag, LayoutDashboard } from "lucide-react";
 import Banner from "../../components/Banner/banner";
 import supabase from "../../supabase/client";
 import SessionContext from "../../context/Session/SessionContext";
 import toast, { Toaster } from "react-hot-toast";
 import FavouritesContext from "../../context/Favourites/FavouritesContext";
+import ReviewsContext from "../../context/Reviews/ReviewsContext";
+import Reviews from "../../components/Reviews/reviews";
 
 const possibleStatuses = {
   FINISHED_AIRING: "Finished Airing",
@@ -55,12 +57,20 @@ export default function Detail() {
   const { id } = useParams();
   const [episode, setEpisode] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isFilled, setIsFilled] = useState(false);
+  const [isPreferiteFilled, setIsPreferiteFilled] = useState(false);
+  const [isReviewFilled, setIsReviewFilled] = useState(false);
   const { session } = useContext(SessionContext);
   const { favourites, setFavourites } = useContext(FavouritesContext);
+  const { review, setReview } = useContext(ReviewsContext);
+  const [description, setDescription] = useState("");
+  const [score, setScore] = useState(null);
+  const [newReview, setNewReview] = useState(null);
 
   function isAlreadyFavourite() {
     return favourites.find((el) => el.anime_id === episode.mal_id);
+  }
+  function isAlreadyReviewed() {
+    return Array.isArray(review) && review.find((el) => el.anime_id === episode.mal_id);
   }
 
   useEffect(() => {
@@ -76,12 +86,23 @@ export default function Detail() {
 
   useEffect(() => {
     if (episode) {
-      setIsFilled(isAlreadyFavourite());
+      const alreadyFavourite = isAlreadyFavourite();
+      const alreadyReviewed = isAlreadyReviewed();
+
+      if (isPreferiteFilled !== alreadyFavourite) {
+        setIsPreferiteFilled(alreadyFavourite);
+      }
+
+      if (isReviewFilled !== alreadyReviewed) {
+        setIsReviewFilled(alreadyReviewed);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [episode, favourites]);
+  }, [episode, favourites, isPreferiteFilled, isReviewFilled]);
 
   async function handleAddToFavourites(episode) {
+    if (session === null) return toast.error("Effettua il login per aggiungere l'anime ai preferiti!");
+
     if (isAlreadyFavourite(episode.mal_id)) {
       return toast.error("Anime già aggiunto.");
     }
@@ -95,7 +116,7 @@ export default function Detail() {
       toast.error("Azione fallita.");
     } else {
       toast.success("Anime aggiunto ai preferiti!");
-      setIsFilled(true);
+      setIsPreferiteFilled(true);
       setFavourites((prevFavourites) => [...prevFavourites, { anime_id: episode.mal_id, anime_title: episode.title }]);
     }
   }
@@ -107,8 +128,49 @@ export default function Detail() {
       toast.error("Errore nella rimozione");
     } else {
       toast.success("Anime rimosso dai preferiti");
-      setIsFilled(false);
+      setIsPreferiteFilled(false);
       setFavourites((prevFavourites) => prevFavourites.filter((fav) => fav.anime_id !== episode.mal_id));
+    }
+  }
+
+  async function handleAddReview() {
+    if (session === null) {
+      return toast.error("Effettua il login per votare!");
+    }
+
+    if (isAlreadyReviewed()) {
+      return toast.error("Anime già votato.");
+    }
+
+    const { data, error } = await supabase
+      .from("reviews")
+      .insert([{ profile_id: session.user.id, anime_id: episode.mal_id, description: description || null, score: score }])
+      .select();
+
+    if (error) {
+      toast.error("Azione fallita.");
+    } else {
+      toast.success("Recensione aggiunta con successo!");
+      setIsReviewFilled(true);
+      setReview((prevReviews) => [...prevReviews, { anime_id: episode.mal_id }]);
+
+      // Crea un oggetto recensione completo da passare al componente Reviews
+      const newReviewData = {
+        id: data[0].id,
+        profile_id: session.user.id,
+        anime_id: episode.mal_id,
+        description: description || null,
+        score: score,
+        created_at: new Date().toISOString(),
+        profiles: { username: session.user.user_metadata?.username || session.user.email },
+      };
+
+      // Aggiorna lo stato per passarlo al componente Reviews
+      setNewReview(newReviewData);
+
+      // Reset dei campi del form
+      setDescription("");
+      setScore(null);
     }
   }
 
@@ -199,19 +261,27 @@ export default function Detail() {
                   }
                 }}
               >
-                <Heart width={33} height={33} fill={isFilled ? "red" : "none"} color={isFilled ? "red" : "white"} />
+                <Heart width={33} height={33} fill={isPreferiteFilled ? "red" : "none"} color={isPreferiteFilled ? "red" : "white"} />
               </button>
             </div>
             <div className={styles.scoreBox}>
-              <h4 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px" }}>Vota</h4>
-              <div className={styles.score}>
-                <Star width={33} height={33} />
-                <Star width={33} height={33} />
-                <Star width={33} height={33} />
-                <Star width={33} height={33} />
-                <Star width={33} height={33} />
-              </div>
-              <h5>Anime votato da altre 6 persone</h5>
+              {!isReviewFilled ? (
+                <div className={styles.reviewBox}>
+                  <div className={styles.score}>
+                    <Star width={33} height={33} fill={score >= 1 ? "yellow" : "none"} color={score >= 1 ? "yellow" : "white"} onClick={() => setScore(1)} />
+                    <Star width={33} height={33} fill={score >= 2 ? "yellow" : "none"} color={score >= 2 ? "yellow" : "white"} onClick={() => setScore(2)} />
+                    <Star width={33} height={33} fill={score >= 3 ? "yellow" : "none"} color={score >= 3 ? "yellow" : "white"} onClick={() => setScore(3)} />
+                    <Star width={33} height={33} fill={score >= 4 ? "yellow" : "none"} color={score >= 4 ? "yellow" : "white"} onClick={() => setScore(4)} />
+                    <Star width={33} height={33} fill={score >= 5 ? "yellow" : "none"} color={score >= 5 ? "yellow" : "white"} onClick={() => setScore(5)} />
+                  </div>
+                  <textarea className={styles.reviewTextarea} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Scrivi la tua recensione" />
+                  <button className={styles.addReviewButton} onClick={handleAddReview}>
+                    Aggiungi recensione
+                  </button>
+                </div>
+              ) : (
+                <h4>Anime già recensito!</h4>
+              )}
             </div>
           </div>
 
@@ -223,17 +293,28 @@ export default function Detail() {
 
             <div className={styles.bottom}>
               <div className={styles.infoBox}>
-                <h4> Studio: {episode.studios[0]?.name || "N/A"}</h4>
-                <h4> Stato: {createStatusTagbox(episode.status)}</h4>
-                <h4> Data di uscita: {formatDate(date)}</h4>
-                <h4> Episodi: {episodes.length === 0 ? "1" : episodes.length}</h4>
-                <h4> Durata episodi: {episode.duration.split(" ").slice(0, 2)}</h4>
-                <h4> Visualizzazioni: {episode.members}</h4>
-                <h4 style={{ display: "flex", alignItems: "center" }}>
-                  <Star width={20} height={20} /> <span style={{ marginLeft: "5px" }}>Voto: {episode.score}</span>
-                </h4>
+                <div className={styles.headers}>
+                  <LayoutDashboard />
+                  <h3>Panoramica</h3>
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                  <h4> Studio: {episode.studios[0]?.name || "N/A"}</h4>
+                  <h4> Stato: {createStatusTagbox(episode.status)}</h4>
+                  <h4> Data di uscita: {formatDate(date)}</h4>
+                  <h4> Episodi: {episodes.length === 0 ? "1" : episodes.length}</h4>
+                  <h4> Durata episodi: {episode.duration.split(" ").slice(0, 2)}</h4>
+                  <h4> Visualizzazioni: {episode.members}</h4>
+                  <h4 style={{ display: "flex", alignItems: "center" }}>
+                    <Star width={20} height={20} /> <span style={{ marginLeft: "5px" }}>Voto: {episode.score}</span>
+                  </h4>
+                </div>
               </div>
               <div className={styles.tagBox}>
+                <div className={styles.headers}>
+                  <Tag />
+                  <h3>Tags</h3>
+                </div>
                 {episode.genres.map((genre) => {
                   const queryParams = createSearchParams({
                     g: genre.mal_id,
@@ -252,9 +333,9 @@ export default function Detail() {
                 })}
               </div>
               <div className={styles.descriptionBox}>
-                <div style={{ padding: "0 0px 4px", display: "flex", gap: "5px" }}>
+                <div className={styles.headers}>
                   <BookText />
-                  <h3>Trama:</h3>
+                  <h3>Trama</h3>
                 </div>
                 {!isExpanded ? (
                   episode.synopsis?.length > 700 ? (
@@ -274,7 +355,7 @@ export default function Detail() {
               </div>
               {episodes.length > 0 && (
                 <div className={styles.episodesBox}>
-                  <div style={{ padding: "0 3px", display: "flex", gap: "5px" }}>
+                  <div className={styles.headers}>
                     <ListVideo />
                     <h3>Episodi</h3>
                   </div>
@@ -294,9 +375,9 @@ export default function Detail() {
         </div>
         {recommended.length > 1 && (
           <div className={styles.bottomBox}>
-            <div style={{ padding: "3px 16px 16px", display: "flex", gap: "5px" }}>
+            <div className={styles.headers}>
               <Clapperboard />
-              <h3>Correlati</h3>
+              <h3>Titoli simili</h3>
             </div>
             <Swiper
               navigation={true}
@@ -329,6 +410,7 @@ export default function Detail() {
             </Swiper>
           </div>
         )}
+        <Reviews animeId={episode.mal_id} newReview={newReview} />
       </div>
       <Toaster
         containerStyle={{

@@ -1,0 +1,88 @@
+.reviewsContainer {
+  display: flex;
+  flex-direction: column;
+  background-color: #1c2125;
+  padding: 16px;
+  border-radius: 4px;
+  margin-right: 16px;
+}
+
+.reviewsHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 8px;
+}
+
+.reviewsHeader h3 {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 18px;
+  color: white;
+  margin: 0;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.reviewCard {
+  background-color: #242a2f;
+  border-radius: 4px;
+  padding: 16px;
+  transition: 0.3s;
+}
+
+.reviewCard:hover {
+  transform: translateY(-2px);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.reviewerInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.reviewerName {
+  font-weight: 600;
+  color: white;
+  font-size: 16px;
+}
+
+.reviewDate {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+}
+
+.reviewScore {
+  display: flex;
+  gap: 2px;
+}
+
+.reviewContent {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.reviewContent p {
+  margin: 0;
+}
+
+.noReviews {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  text-align: center;
+  padding: 20px 0;
+}

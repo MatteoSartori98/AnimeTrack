@@ -39,7 +39,8 @@
   position: relative;
 }
 
-.buttonn {
+.buttonn,
+.dropdownButton {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -58,23 +59,10 @@
   transition: all 0.2s ease-in-out;
 }
 
-.dropdownButton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  height: 44px;
-  margin: 10px 0;
-  padding: 0 20px;
-  border-radius: 6px;
-  font-size: 16px;
-  font-weight: 500;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-  color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
-  border: 0;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
+.buttonn:hover,
+.dropdownButton:hover {
+  transform: scale(0.98);
+  background: linear-gradient(135deg, #3b83f6de, #8a5cf6e7);
 }
 
 .filtersBox {

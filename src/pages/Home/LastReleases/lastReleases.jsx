@@ -21,7 +21,7 @@ export default function LastReleases() {
     setRemaining(availableEpisodes.length - visibleEpisodes);
   }, [availableEpisodes, visibleEpisodes]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div>Caricamento...</div>;
   if (isError) return <p className="error-text">{isError}</p>;
 
   const loadNextEpisodes = () => {

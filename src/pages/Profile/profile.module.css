@@ -32,11 +32,11 @@
   height: 150px;
   width: 150px;
   border-radius: 999999px;
-  background-color: white;
   position: absolute;
   top: 73px;
   left: 40px;
   z-index: 11;
+  border: 2px solid #3b82f6;
 
   img {
     height: 100%;
@@ -137,6 +137,7 @@
   img {
     height: 120px;
     width: 120px;
+
     border-radius: 9999px !important;
   }
   .selected {
@@ -196,12 +197,11 @@
 .confirmButton {
   background: green !important;
 }
-/* AnimeFavoritesTable.module.css */
+
 .tableWrapper {
   background: #1c2125;
   border-radius: 6px;
   overflow-x: auto;
-  margin: 20px 0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }
 
@@ -291,4 +291,22 @@
     width: 50px;
     height: 70px;
   }
+}
+
+.reviewDescription {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reviewScore {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+
+.reviews {
+  background: #1c2125;
+  border-radius: 6px;
 }
