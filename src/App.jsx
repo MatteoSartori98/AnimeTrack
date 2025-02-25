@@ -10,8 +10,8 @@ import SingIn from "./pages/Authentication/SignIn.jsx";
 import SessionContextProvider from "./context/Session/SessionContextProvide.jsx";
 import Profile from "./pages/Profile/profile.jsx";
 import FavContextProvider from "./context/Favourites/FavouritesContextProvider.jsx";
-import ProtectedRoute from "./components/ProtectedRoute/protectedRoute.jsx";
-import PublicRoute from "./components/PublicRoute/publicRoute.jsx";
+import AuthedRoute from "./guards/AuthedRoute/AuthedRoute.jsx";
+import UnAuthedRoute from "./guards/UnAuthedRoute/UnAuthedRoute.jsx";
 import ReviewsContextProvider from "./context/Reviews/ReviewsContextProvider.jsx";
 import AvatarContextProvider from "./context/Avatar/AvatarContextProvider.jsx";
 
@@ -39,25 +39,25 @@ function App() {
                   <Route
                     path="/register"
                     element={
-                      <PublicRoute>
+                      <UnAuthedRoute>
                         <SingUp />
-                      </PublicRoute>
+                      </UnAuthedRoute>
                     }
                   />
                   <Route
                     path="/login"
                     element={
-                      <PublicRoute>
+                      <UnAuthedRoute>
                         <SingIn />
-                      </PublicRoute>
+                      </UnAuthedRoute>
                     }
                   />
                   <Route
                     path="/profile"
                     element={
-                      <ProtectedRoute>
+                      <AuthedRoute>
                         <Profile />
-                      </ProtectedRoute>
+                      </AuthedRoute>
                     }
                   />
                 </Route>

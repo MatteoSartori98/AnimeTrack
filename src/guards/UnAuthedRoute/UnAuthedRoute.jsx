@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { Navigate } from "react-router";
 import SessionContext from "../../context/Session/SessionContext";
 
-const PublicRoute = ({ children }) => {
+const UnAuthedRoute = ({ children }) => {
   const { session } = useContext(SessionContext);
 
   if (session) {
@@ -13,4 +13,4 @@ const PublicRoute = ({ children }) => {
   return children;
 };
 
-export default PublicRoute;
+export default UnAuthedRoute;
