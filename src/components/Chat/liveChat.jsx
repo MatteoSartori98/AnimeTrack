@@ -41,6 +41,7 @@ export default function LiveChat({ animeID }) {
   const handleSendMessage = async (event) => {
     event.preventDefault();
     if (message.length === 0) return;
+    if (!session) return toast.error("Devi essere loggato per mandare un messaggio");
     const { error } = await supabase
       .from("messages")
       .insert([
@@ -91,7 +92,7 @@ export default function LiveChat({ animeID }) {
         <div className={styles.chatHeader} style={{ backgroundColor: isOpened ? "#242a2f" : "#1c2125", borderBottom: isOpened ? "1px solid rgba(255, 255, 255, 0.1)" : "0px" }}>
           <div className={styles.headerContent}>
             <h3 className={styles.roomTitle}>Chat Live</h3>
-            <p className={styles.onlineStatus}>2 online</p>
+            <p className={styles.onlineStatus}>1 online</p>
           </div>
           {isOpened ? <ChevronUp /> : <ChevronDown />}
         </div>
