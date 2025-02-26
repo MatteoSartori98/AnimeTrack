@@ -134,7 +134,6 @@ export default function Navbar() {
                     <Link to="/profile" className={styles.profile}>
                       Profilo
                     </Link>
-                    <Link className={styles.profile}>About</Link>
                     <hr style={{ marginBottom: "6px", marginTop: "6px" }} />
                     <div>
                       <button style={{ display: "flex" }} onClick={signOut}>

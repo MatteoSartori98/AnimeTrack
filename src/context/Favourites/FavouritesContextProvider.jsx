@@ -9,7 +9,7 @@ export default function FavContextProvider({ children }) {
   const [favourites, setFavourites] = useState([]);
 
   const readFavourites = async () => {
-    let { data: favourites } = await supabase.from("favourites").select("profile_id , anime_title, anime_id ").eq("profile_id", session.user.id);
+    let { data: favourites } = await supabase.from("favourites").select("profile_id , anime_title, anime_id, created_at").eq("profile_id", session.user.id);
 
     setFavourites(favourites);
   };

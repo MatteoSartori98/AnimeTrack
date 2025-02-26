@@ -1,15 +1,12 @@
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import styles from "./authStyle.module.css";
 import supabase from "../../supabase/client";
 import toast, { Toaster } from "react-hot-toast";
-import { useState, useEffect, useContext } from "react";
+import { useState } from "react";
 import Banner from "../../components/Banner/banner";
-import SessionContext from "../../context/Session/SessionContext";
 
 export default function SignIn() {
   const [dataa, setData] = useState("");
-  const navigate = useNavigate();
-  const { session } = useContext(SessionContext);
 
   async function handleSignIn(event) {
     event.preventDefault();

@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from "react";
 import styles from "./profile.module.css";
 import Banner from "../../components/Banner/banner";
-import { Calendar, Heart, Mail, Star, Trash2, UserRoundPen, X } from "lucide-react";
+import { Calendar, Heart, Mail, Star, UserRoundPen, X } from "lucide-react";
 import SessionContext from "../../context/Session/SessionContext";
 import FavouritesContext from "../../context/Favourites/FavouritesContext";
 import ReviewsContext from "../../context/Reviews/ReviewsContext";
@@ -11,55 +11,63 @@ import toast, { Toaster } from "react-hot-toast";
 import supabase from "../../supabase/client";
 import { Link } from "react-router";
 import AvatarContext from "../../context/Avatar/AvatarContext";
+import { disableScroll, enableScroll } from "../../utils/ScrollHandler.jsx";
 
-const avatars = ["/media/avatar2.jpg", "/media/avatar3.jpg", "/media/avatar4.jpg", "/media/avatar5.jpg"];
+const avatars = [
+  "/media/avatar2.jpg",
+  "/media/avatar3.jpg",
+  "/media/avatar4.jpg",
+  "/media/avatar5.jpg",
+  "/media/avatar6.png",
+  "/media/avatar7.png",
+  "/media/avatar8.jpg",
+  "/media/avatar9.jpeg",
+  "/media/avatar10.jpeg",
+  "/media/avatar11.jpg",
+  "/media/avatar12.jpg",
+  "/media/avatar13.jpg",
+];
 
 export default function Profile() {
-  // eslint-disable-next-line no-unused-vars
   const [isEditing, setIsEditing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [avatar, setAvatar] = useState("/media/avatarDefault.png");
   const [bio, setBio] = useState("");
   const [editedBio, setEditedBio] = useState("");
-  const [isFavouritesOpened, setIsFavouritesOpened] = useState(false);
-  const [isReviewOpened, setIsReviewOpened] = useState(false);
-  const [userReviews, setUserReviews] = useState([]);
-  const [isReviewsLoading, setIsReviewsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [reviewAnimeId, setReviewAnimeId] = useState(null);
+  const [reviewScore, setReviewScore] = useState(1);
+  const [reviewDescription, setReviewDescription] = useState("");
+  const [reviewAnimeTitle, setReviewAnimeTitle] = useState("");
   const session = useContext(SessionContext) || { user: null };
-  const { updateAvatar } = useContext(AvatarContext);
+  const { updateAvatar, avatarUrl } = useContext(AvatarContext);
+  const [selectedAvatar, setSelectedAvatar] = useState(avatarUrl);
+
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [actionTarget, setActionTarget] = useState(null);
+  const [actionType, setActionType] = useState("");
+  const [actionIsAdd, setActionIsAdd] = useState(false);
 
   const { favourites, setFavourites } = useContext(FavouritesContext);
-  const { setReview } = useContext(ReviewsContext);
+  const { review, setReview } = useContext(ReviewsContext);
+
+  const uniqueAnimeIds = [...new Set([...(favourites || []).map((fav) => fav.anime_id), ...(review || []).map((rev) => rev.anime_id)])];
 
   const queryResults = useQueries({
-    queries: favourites.map((fav) => ({
-      queryKey: ["animeFavourites", fav.anime_id],
+    queries: uniqueAnimeIds.map((animeId) => ({
+      queryKey: ["animeList", animeId],
       queryFn: () =>
         animeApi.getAnimeData({
-          animeID: fav.anime_id,
+          animeID: animeId,
         }),
-      enabled: !!fav.anime_id,
-    })),
-  });
-
-  const reviewQueryResults = useQueries({
-    queries: (userReviews || []).map((rev) => ({
-      queryKey: ["animeReviews", rev.anime_id],
-      queryFn: () =>
-        animeApi.getAnimeData({
-          animeID: rev.anime_id,
-        }),
-      enabled: !!rev.anime_id,
+      enabled: !!animeId,
     })),
   });
 
   const getAnimeData = queryResults.map((result) => result.data);
-  const getReviewAnimeData = reviewQueryResults.map((result) => result.data);
-  const isLoading = queryResults.some((result) => result.isLoading);
-  const isReviewDataLoading = reviewQueryResults.some((result) => result.isLoading);
+  const isDataLoading = queryResults.some((result) => result.isLoading);
   const error = queryResults.find((result) => result.error);
-  const reviewError = reviewQueryResults.find((result) => result.error);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -76,10 +84,14 @@ export default function Profile() {
   }, [session.user?.id]);
 
   useEffect(() => {
-    const fetchUserReviews = async () => {
-      setIsReviewsLoading(true);
+    setSelectedAvatar(avatarUrl);
+  }, [avatarUrl]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      setIsLoading(true);
       try {
-        const { data, error } = await supabase
+        const { data: reviewsData, error: reviewsError } = await supabase
           .from("reviews")
           .select(
             `
@@ -93,24 +105,49 @@ export default function Profile() {
           .eq("profile_id", session.user.id)
           .order("created_at", { ascending: false });
 
-        if (error) {
-          console.error("Error fetching reviews:", error);
-          return;
+        if (reviewsError) {
+          console.error("Error fetching reviews:", reviewsError);
+        } else {
+          setReview(reviewsData || []);
         }
 
-        setUserReviews(data || []);
-        setReview(data || []);
+        const { data: favouritesData, error: favouritesError } = await supabase
+          .from("favourites")
+          .select(
+            `
+            id,
+            anime_id,
+            created_at
+          `
+          )
+          .eq("profile_id", session.user.id);
+
+        if (favouritesError) {
+          console.error("Error fetching favourites:", favouritesError);
+        } else {
+          setFavourites(favouritesData || []);
+        }
       } catch (error) {
         console.error("Unexpected error:", error);
       } finally {
-        setIsReviewsLoading(false);
+        setIsLoading(false);
       }
     };
 
-    if (session.user?.id && isReviewOpened) {
-      fetchUserReviews();
+    if (session.user?.id) {
+      fetchUserData();
     }
-  }, [session.user?.id, isReviewOpened, setReview]);
+  }, [session.user?.id, setReview, setFavourites]);
+
+  useEffect(() => {
+    if (isConfirmModalOpen || isModalOpen || isReviewModalOpen) {
+      disableScroll();
+    } else {
+      enableScroll();
+    }
+
+    return () => enableScroll();
+  }, [isConfirmModalOpen, isModalOpen, isReviewModalOpen]);
 
   if (session.user === null) return;
 
@@ -132,29 +169,39 @@ export default function Profile() {
     event.preventDefault();
     setIsEditing(false);
     setIsModalOpen(false);
-    setSelectedAvatar(null);
+    setSelectedAvatar(avatar);
     setEditedBio(bio);
-    toast.error("Modifiche annullate");
+  }
+
+  function handleCloseReviewModal() {
+    setIsReviewModalOpen(false);
+    setReviewAnimeId(null);
+    setReviewScore(0);
+    setReviewDescription("");
+    setReviewAnimeTitle("");
+    toast.error("Recensione annullata");
   }
 
   function handleConfirm(event) {
     event.preventDefault();
 
-    if (!selectedAvatar) {
-      toast.error("Seleziona un avatar prima di confermare.");
-      return;
+    const avatarToUpdate = selectedAvatar || avatar;
+
+    if (avatarToUpdate !== avatar) {
+      updateAvatar(avatarToUpdate);
+      handleModifyAvatar(avatarToUpdate);
     }
 
-    updateAvatar(selectedAvatar);
-    handleModifyAvatar(selectedAvatar);
-
     const bioToUpdate = editedBio !== "" ? editedBio : bio;
-    setBio(bioToUpdate);
-    handleModifyBio(bioToUpdate);
+    if (bioToUpdate !== bio) {
+      setBio(bioToUpdate);
+      handleModifyBio(bioToUpdate);
+    }
 
     setIsEditing(false);
     setIsModalOpen(false);
     setSelectedAvatar(null);
+
     toast.success("Profilo modificato!");
   }
 
@@ -162,28 +209,93 @@ export default function Profile() {
     setSelectedAvatar(src);
   }
 
-  async function handleRemoveFromFavourites(anime_id) {
-    const { error } = await supabase.from("favourites").delete().eq("anime_id", anime_id).eq("profile_id", session.user.id);
+  async function handleAddReview() {
+    if (!reviewAnimeId || reviewScore === 0) {
+      toast.error("Seleziona un voto prima di confermare");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("reviews")
+      .insert([
+        {
+          profile_id: session.user.id,
+          anime_id: reviewAnimeId,
+          description: reviewDescription || null,
+          score: reviewScore,
+        },
+      ])
+      .select();
 
     if (error) {
-      toast.error("Errore nella rimozione");
+      toast.error("Azione fallita.");
     } else {
-      const newFavourites = favourites.filter((fav) => fav.anime_id !== anime_id);
-      setFavourites(newFavourites);
-      toast.success("Anime rimosso dai preferiti");
+      const newReviewData = {
+        id: data[0].id,
+        anime_id: reviewAnimeId,
+        description: reviewDescription || null,
+        score: reviewScore,
+        created_at: new Date().toISOString(),
+      };
+
+      setReview((prevReviews) => [...prevReviews, newReviewData]);
+      toast.success("Recensione aggiunta con successo!");
+
+      setIsReviewModalOpen(false);
+      setReviewAnimeId(null);
+      setReviewScore(0);
+      setReviewDescription("");
+      setReviewAnimeTitle("");
     }
   }
 
-  async function handleRemoveReview(review_id) {
-    const { error } = await supabase.from("reviews").delete().eq("id", review_id);
+  async function toggleFavourite(anime_id, isAdd) {
+    if (isAdd) {
+      const { error } = await supabase.from("favourites").insert([{ profile_id: session.user.id, anime_id }]);
 
-    if (error) {
-      toast.error("Errore nella rimozione della recensione");
+      if (error) {
+        toast.error("Errore nell'aggiunta ai preferiti");
+      } else {
+        const newFavourite = { profile_id: session.user.id, anime_id, created_at: new Date().toISOString() };
+        setFavourites([...favourites, newFavourite]);
+        toast.success("Anime aggiunto ai preferiti");
+      }
     } else {
-      const newReviews = userReviews.filter((rev) => rev.id !== review_id);
-      setUserReviews(newReviews);
-      setReview(newReviews);
-      toast.success("Recensione rimossa con successo");
+      const { error } = await supabase.from("favourites").delete().eq("anime_id", anime_id).eq("profile_id", session.user.id);
+
+      if (error) {
+        toast.error("Errore nella rimozione dai preferiti");
+      } else {
+        const newFavourites = favourites.filter((fav) => fav.anime_id !== anime_id);
+        setFavourites(newFavourites);
+        toast.success("Anime rimosso dai preferiti");
+      }
+    }
+  }
+
+  async function toggleReview(anime_id, isAdd) {
+    if (isAdd) {
+      const animeData = getAnimeData.find((anime) => anime?.data?.mal_id === anime_id);
+      if (animeData) {
+        setReviewAnimeId(anime_id);
+        setReviewAnimeTitle(animeData.data.title);
+        setIsReviewModalOpen(true);
+      } else {
+        toast.error("Dati anime non disponibili");
+      }
+    } else {
+      const reviewToRemove = review.find((rev) => rev.anime_id === anime_id);
+      if (!reviewToRemove) return;
+
+      const { error } = await supabase.from("reviews").delete().eq("id", reviewToRemove.id);
+
+      if (error) {
+        toast.error("Errore nella rimozione della recensione");
+      } else {
+        const newReviews = review.filter((rev) => rev.anime_id !== anime_id);
+        setReview(newReviews);
+        toast.success("Recensione rimossa con successo");
+      }
     }
   }
 
@@ -194,6 +306,7 @@ export default function Profile() {
       toast.error("Errore nell'aggiornamento della bio");
     }
   }
+
   async function handleModifyAvatar(newAvatar) {
     let { data: user, error: fetchError } = await supabase.from("profiles").select("avatar_url").eq("id", session.user.id).single();
 
@@ -217,16 +330,6 @@ export default function Profile() {
     }
   }
 
-  function handleOpenInfo(button) {
-    if (button === "review") {
-      setIsFavouritesOpened(false);
-      setIsReviewOpened(!isReviewOpened);
-    } else if (button === "favourites") {
-      setIsReviewOpened(false);
-      setIsFavouritesOpened(!isFavouritesOpened);
-    }
-  }
-
   function renderStars(score) {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -234,6 +337,86 @@ export default function Profile() {
     }
     return stars;
   }
+
+  function renderStarSelection(score) {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Star
+          key={i}
+          width={30}
+          height={30}
+          fill={i <= reviewScore ? "yellow" : "none"}
+          color={i <= reviewScore ? "yellow" : "white"}
+          onClick={() => setReviewScore(i)}
+          className={styles.starSelection}
+        />
+      );
+    }
+    return stars;
+  }
+
+  function openConfirmModal(type, id, isAdd) {
+    setActionType(type);
+    setActionTarget(id);
+    setActionIsAdd(isAdd);
+    setIsConfirmModalOpen(true);
+  }
+
+  function handleConfirmAction() {
+    if (!actionTarget) {
+      toast.error("Nessun elemento selezionato.");
+      return;
+    }
+
+    if (actionType === "favourite") {
+      toggleFavourite(actionTarget, actionIsAdd);
+    } else if (actionType === "review") {
+      toggleReview(actionTarget, actionIsAdd);
+    }
+
+    setIsConfirmModalOpen(false);
+    setActionTarget(null);
+    setActionType("");
+    setActionIsAdd(false);
+  }
+
+  const isInFavourites = (animeId) => {
+    return favourites.some((fav) => fav.anime_id === animeId);
+  };
+
+  const getAnimeReview = (animeId) => {
+    return review.find((rev) => rev.anime_id === animeId);
+  };
+
+  const getFirstInteractionDate = (animeId) => {
+    const favDate = favourites.find((f) => f.anime_id === animeId)?.created_at;
+    const revDate = review.find((r) => r.anime_id === animeId)?.created_at;
+
+    if (favDate) {
+      return new Date(favDate).toLocaleDateString();
+    } else if (revDate) {
+      return new Date(revDate).toLocaleDateString();
+    }
+
+    return "-";
+  };
+
+  const getConfirmModalTitle = () => {
+    if (actionType === "favourite") {
+      return actionIsAdd ? "Conferma aggiunta" : "Conferma rimozione";
+    } else {
+      return actionIsAdd ? "Conferma aggiunta" : "Conferma rimozione";
+    }
+  };
+
+  const getConfirmModalMessage = () => {
+    if (actionType === "favourite") {
+      return actionIsAdd ? "Sei sicuro di voler aggiungere questo anime ai preferiti?" : "Sei sicuro di voler rimuovere questo anime dai preferiti?";
+    } else {
+      return actionIsAdd ? "Sei sicuro di voler aggiungere una recensione per questo anime?" : "Sei sicuro di voler rimuovere la recensione per questo anime?";
+    }
+  };
 
   return (
     <>
@@ -245,7 +428,7 @@ export default function Profile() {
             </div>
             <div className={styles.avatarSection}>
               <h3>Modifica Avatar</h3>
-              <div>
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", width: "540px" }}>
                 {avatars.map((el) => (
                   <button key={el} onClick={() => handleAvatarSelection(el)} className={styles.imageButton}>
                     <img src={el} className={selectedAvatar === el ? styles.selected : ""} />
@@ -258,11 +441,66 @@ export default function Profile() {
               <h3>Modifica Biografia</h3>
               <textarea value={editedBio} onChange={(e) => setEditedBio(e.target.value)} placeholder="Scrivi qualcosa su di te..." rows={4} className={styles.bioTextarea} />
             </div>
-            <div className={styles.callToAction}>
+            <div className={styles.callToAction} style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
               <button className={styles.cancelButton} onClick={handleCloseModal}>
                 Annulla
               </button>
               <button className={styles.confirmButton} onClick={handleConfirm}>
+                Conferma
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isReviewModalOpen && (
+        <div className={styles.modal}>
+          <div className={styles.modalBody}>
+            <div className={styles.close}>
+              <X height={35} width={35} color="white" onClick={handleCloseReviewModal} />
+            </div>
+            <h3>Aggiungi Recensione</h3>
+
+            <div className={styles.starRatingSection}>
+              <h4>Voto</h4>
+              <div className={styles.starRating}>{renderStarSelection()}</div>
+            </div>
+
+            <div className={styles.reviewSection}>
+              <h4>Recensione</h4>
+              <textarea
+                value={reviewDescription}
+                onChange={(e) => setReviewDescription(e.target.value)}
+                placeholder="Scrivi la tua recensione..."
+                rows={4}
+                className={styles.bioTextarea}
+              />
+            </div>
+            <div className={styles.callToAction} style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
+              <button className={styles.cancelButton} onClick={handleCloseReviewModal}>
+                Annulla
+              </button>
+              <button className={styles.confirmButton} onClick={handleAddReview}>
+                Conferma
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isConfirmModalOpen && (
+        <div className={styles.modal}>
+          <div className={styles.modalBody}>
+            <div className={styles.close}>
+              <X height={35} width={35} color="white" onClick={() => setIsConfirmModalOpen(false)} />
+            </div>
+            <h3>{getConfirmModalTitle()}</h3>
+            <p>{getConfirmModalMessage()}</p>
+            <div className={styles.callToAction} style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
+              <button className={styles.cancelButton} onClick={() => setIsConfirmModalOpen(false)}>
+                Annulla
+              </button>
+              <button className={styles.confirmButton} onClick={handleConfirmAction}>
                 Conferma
               </button>
             </div>
@@ -296,147 +534,87 @@ export default function Profile() {
             </div>
 
             <div style={{ margin: "30px 0", padding: "5px 0" }}>
-              <p>{bio}</p>
-            </div>
-            <div className={styles.callToAction}>
-              <button onClick={() => handleOpenInfo("review")}>
-                <Star />
-                Recensioni
-              </button>
-              <button onClick={() => handleOpenInfo("favourites")}>
-                <Heart />
-                Preferiti
-              </button>
+              <p style={{ color: "rgba(255, 255, 255, 0.7)" }}>{bio}</p>
             </div>
           </div>
         </div>
 
-        {isFavouritesOpened && (
-          <div className={styles.favourites}>
-            {isLoading ? (
-              <p>Caricamento...</p>
-            ) : error ? (
-              <p>Errore: {error.message}</p>
-            ) : (
-              <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                  <thead>
-                    <tr>
-                      <th>Copertina</th>
-                      <th>Titolo</th>
-                      <th>Voto</th>
-                      <th>Azioni</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {getAnimeData.length > 0 ? (
-                      getAnimeData.map((anime, index) => (
-                        <tr key={index}>
+        <div className={styles.animeList}>
+          {isDataLoading || isLoading ? (
+            <p>Caricamento...</p>
+          ) : error ? (
+            <p>Errore: {error.message}</p>
+          ) : (
+            <div className={styles.tableWrapper}>
+              <table className={styles.table}>
+                <thead>
+                  <tr>
+                    <th>Copertina</th>
+                    <th>Titolo</th>
+                    <th>Recensione</th>
+                    <th>Voto</th>
+                    <th>Aggiunto</th>
+                    <th>Azioni</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getAnimeData.length > 0 ? (
+                    getAnimeData.map((anime, index) => {
+                      if (!anime) return null;
+                      const animeReview = getAnimeReview(anime.data.mal_id);
+                      const isFavourite = isInFavourites(anime.data.mal_id);
+                      const firstInteractionDate = getFirstInteractionDate(anime.data.mal_id);
+
+                      return (
+                        <tr key={index} style={{ backgroundColor: index % 2 ? "#282C30" : "#1C2125" }}>
                           <td className={styles.coverCell}>
-                            <Link to={`/detail/${anime?.data.mal_id}`}>
-                              <img src={anime?.data.images.jpg.large_image_url} alt={anime?.data.title} className={styles.coverImage} />
+                            <Link to={`/detail/${anime.data.mal_id}`}>
+                              <img src={anime.data.images.jpg.large_image_url} alt={anime.data.title} className={styles.coverImage} />
                             </Link>
                           </td>
                           <td>
-                            <Link style={{ color: "white" }} to={`/detail/${anime?.data.mal_id}`}>
-                              {anime?.data.title}
+                            <Link style={{ color: "white" }} to={`/detail/${anime.data.mal_id}`}>
+                              {anime.data.title}
                             </Link>
                           </td>
+                          <td className={styles.reviewDescription}>{animeReview?.description ? animeReview.description : "N/A"}</td>
                           <td>
                             <div className={styles.rating}>
-                              <span className={styles.star}>
-                                {anime?.data.score} <Star fill="gold" height={18} width={18} />
-                              </span>
+                              <div className={styles.reviewScore}>{animeReview ? renderStars(animeReview.score) : "N/A"}</div>
                             </div>
                           </td>
+                          <td>{firstInteractionDate}</td>
                           <td>
-                            <div style={{ display: "flex", justifyContent: "center" }}>
-                              <button className={styles.removeButton} aria-label={`Remove ${anime?.data.title}`} onClick={() => handleRemoveFromFavourites(anime.data.mal_id)}>
-                                <Trash2 className={styles.trashIcon} height={25} width={25} />
+                            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+                              <button className={styles.actionButton} onClick={() => openConfirmModal("favourite", anime.data.mal_id, !isFavourite)}>
+                                <Heart fill={isFavourite ? "red" : "none"} color={isFavourite ? "red" : "white"} height={25} width={25} />
                               </button>
+                              {animeReview ? (
+                                <button className={styles.actionButton} onClick={() => openConfirmModal("review", anime.data.mal_id, false)}>
+                                  <Star fill="gold" color="gold" height={25} width={25} />
+                                </button>
+                              ) : (
+                                <button className={styles.actionButton} onClick={() => toggleReview(anime.data.mal_id, true)}>
+                                  <Star fill="none" color="white" height={25} width={25} />
+                                </button>
+                              )}
                             </div>
                           </td>
                         </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" style={{ textAlign: "center", padding: "20px 10px" }}>
-                          Non ci sono anime tra i tuoi preferiti...
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
-
-        {isReviewOpened && (
-          <div className={styles.reviews}>
-            {isReviewsLoading || isReviewDataLoading ? (
-              <p>Caricamento...</p>
-            ) : reviewError ? (
-              <p>Errore: {reviewError.message}</p>
-            ) : (
-              <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                  <thead>
+                      );
+                    })
+                  ) : (
                     <tr>
-                      <th>Copertina</th>
-                      <th>Titolo</th>
-                      <th>Recensione</th>
-                      <th>Voto</th>
-                      <th>Data</th>
-                      <th>Azioni</th>
+                      <td colSpan="6" style={{ textAlign: "center", padding: "20px 10px", color: "rgba(255, 255, 255, 0.7)" }}>
+                        Non ci sono ancora anime nella tua lista...
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {getReviewAnimeData.length > 0 ? (
-                      getReviewAnimeData.map((anime, index) => {
-                        const review = userReviews.find((rev) => rev.anime_id === anime?.data.mal_id);
-                        return (
-                          <tr key={index}>
-                            <td className={styles.coverCell}>
-                              <Link to={`/detail/${anime?.data.mal_id}`}>
-                                <img src={anime?.data.images.jpg.large_image_url} alt={anime?.data.title} className={styles.coverImage} />
-                              </Link>
-                            </td>
-                            <td>
-                              <Link style={{ color: "white" }} to={`/detail/${anime?.data.mal_id}`}>
-                                {anime?.data.title}
-                              </Link>
-                            </td>
-                            <td className={styles.reviewDescription}>{review?.description ? review.description : "Nessuna descrizione"}</td>
-                            <td>
-                              <div className={styles.rating}>
-                                <div className={styles.reviewScore}>{renderStars(review?.score || 0)}</div>
-                              </div>
-                            </td>
-                            <td>{new Date(review?.created_at).toLocaleDateString()}</td>
-                            <td>
-                              <div style={{ display: "flex", justifyContent: "center" }}>
-                                <button className={styles.removeButton} aria-label={`Remove review for ${anime?.data.title}`} onClick={() => handleRemoveReview(review?.id)}>
-                                  <Trash2 className={styles.trashIcon} height={25} width={25} />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan="6" style={{ textAlign: "center", padding: "20px 10px" }}>
-                          Non hai ancora recensito alcun anime...
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        )}
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
 
       <Toaster

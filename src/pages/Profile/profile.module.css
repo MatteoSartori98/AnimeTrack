@@ -73,53 +73,45 @@
   cursor: pointer;
   transition: 0.3s ease-in-out;
 }
+
 .edit:hover {
   transform: scale(0.98);
-}
-.callToAction {
-  display: flex;
-  gap: 20px;
-  justify-content: start;
-  align-items: center;
-  button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-    width: 150px;
-    padding: 9px;
-    border: 0;
-    border-radius: 4px;
-    color: white;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s ease-in-out;
-  }
-  button:hover {
-    transform: scale(0.98);
-  }
+  background: linear-gradient(135deg, #3b83f6de, #8a5cf6e7);
 }
 
 .modal {
-  position: absolute;
+  position: fixed;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
+  height: 100vh;
   width: 100%;
   background-color: rgba(18, 22, 25, 0.8);
   color: white;
   z-index: 999;
+  top: 0;
 }
+
+.actionButton {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.actionButton:hover {
+  transform: scale(1.2);
+}
+
 .modalBody {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   position: relative;
-  width: 800px;
-  height: 450px;
+  width: max-content;
+  height: max-content;
+  border-radius: 6px;
+  gap: 30px;
   padding: 25px;
   background-color: #1c2125;
   z-index: 9999;
@@ -135,13 +127,13 @@
   }
 
   img {
-    height: 120px;
-    width: 120px;
+    height: 85px;
+    width: 85px;
 
     border-radius: 9999px !important;
   }
   .selected {
-    border: 2px solid blue;
+    border: 3px solid rgb(3, 196, 3);
   }
 }
 
@@ -152,11 +144,6 @@
   gap: 10px;
 }
 
-.callToAction {
-  display: flex;
-  gap: 10px;
-}
-
 .close {
   position: absolute;
   right: 10px;
@@ -164,13 +151,8 @@
   cursor: pointer;
 }
 
-.callToAction {
-  margin-left: auto;
-  z-index: 999999;
-}
-
 .bioTextarea {
-  width: 100%;
+  width: 500px;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -189,13 +171,33 @@
 .confirmButton,
 .cancelButton {
   width: 120px !important;
+  padding: 10px;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 4px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.confirmButton:hover {
+  transform: scale(0.98);
+  background: rgba(0, 128, 0, 0.815);
+}
+
+.cancelButton:hover {
+  transform: scale(0.98);
+  background: rgba(255, 0, 0, 0.815);
 }
 
 .cancelButton {
-  background: red !important;
+  background: red;
 }
+
 .confirmButton {
-  background: green !important;
+  background: green;
 }
 
 .tableWrapper {

@@ -17,6 +17,7 @@ import toast, { Toaster } from "react-hot-toast";
 import FavouritesContext from "../../context/Favourites/FavouritesContext";
 import ReviewsContext from "../../context/Reviews/ReviewsContext";
 import Reviews from "../../components/Reviews/reviews";
+import LiveChat from "../../components/Chat/liveChat";
 
 const possibleStatuses = {
   FINISHED_AIRING: "Finished Airing",
@@ -63,7 +64,7 @@ export default function Detail() {
   const { favourites, setFavourites } = useContext(FavouritesContext);
   const { review, setReview } = useContext(ReviewsContext);
   const [description, setDescription] = useState("");
-  const [score, setScore] = useState(null);
+  const [score, setScore] = useState(1);
   const [newReview, setNewReview] = useState(null);
 
   function isAlreadyFavourite() {
@@ -154,7 +155,6 @@ export default function Detail() {
       setIsReviewFilled(true);
       setReview((prevReviews) => [...prevReviews, { anime_id: episode.mal_id }]);
 
-      // Crea un oggetto recensione completo da passare al componente Reviews
       const newReviewData = {
         id: data[0].id,
         profile_id: session.user.id,
@@ -165,12 +165,10 @@ export default function Detail() {
         profiles: { username: session.user.user_metadata?.username || session.user.email },
       };
 
-      // Aggiorna lo stato per passarlo al componente Reviews
       setNewReview(newReviewData);
 
-      // Reset dei campi del form
       setDescription("");
-      setScore(null);
+      setScore(1);
     }
   }
 
@@ -249,6 +247,9 @@ export default function Detail() {
                 <span style={{ marginLeft: "3px" }}>Trailer</span>
               </a>
             </div>
+
+            <LiveChat animeID={episode.mal_id} />
+
             <div className={styles.preferiteBox}>
               <h4 style={{ textAlign: "center", marginBottom: "8px", fontSize: "18px" }}>Aggiungi ai preferiti</h4>
               <button
@@ -268,11 +269,46 @@ export default function Detail() {
               {!isReviewFilled ? (
                 <div className={styles.reviewBox}>
                   <div className={styles.score}>
-                    <Star width={33} height={33} fill={score >= 1 ? "yellow" : "none"} color={score >= 1 ? "yellow" : "white"} onClick={() => setScore(1)} />
-                    <Star width={33} height={33} fill={score >= 2 ? "yellow" : "none"} color={score >= 2 ? "yellow" : "white"} onClick={() => setScore(2)} />
-                    <Star width={33} height={33} fill={score >= 3 ? "yellow" : "none"} color={score >= 3 ? "yellow" : "white"} onClick={() => setScore(3)} />
-                    <Star width={33} height={33} fill={score >= 4 ? "yellow" : "none"} color={score >= 4 ? "yellow" : "white"} onClick={() => setScore(4)} />
-                    <Star width={33} height={33} fill={score >= 5 ? "yellow" : "none"} color={score >= 5 ? "yellow" : "white"} onClick={() => setScore(5)} />
+                    <Star
+                      width={33}
+                      height={33}
+                      fill={score >= 1 ? "yellow" : "none"}
+                      color={score >= 1 ? "yellow" : "white"}
+                      onClick={() => setScore(1)}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <Star
+                      width={33}
+                      height={33}
+                      fill={score >= 2 ? "yellow" : "none"}
+                      color={score >= 2 ? "yellow" : "white"}
+                      onClick={() => setScore(2)}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <Star
+                      width={33}
+                      height={33}
+                      fill={score >= 3 ? "yellow" : "none"}
+                      color={score >= 3 ? "yellow" : "white"}
+                      onClick={() => setScore(3)}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <Star
+                      width={33}
+                      height={33}
+                      fill={score >= 4 ? "yellow" : "none"}
+                      color={score >= 4 ? "yellow" : "white"}
+                      onClick={() => setScore(4)}
+                      style={{ cursor: "pointer" }}
+                    />
+                    <Star
+                      width={33}
+                      height={33}
+                      fill={score >= 5 ? "yellow" : "none"}
+                      color={score >= 5 ? "yellow" : "white"}
+                      onClick={() => setScore(5)}
+                      style={{ cursor: "pointer" }}
+                    />
                   </div>
                   <textarea className={styles.reviewTextarea} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Scrivi la tua recensione" />
                   <button className={styles.addReviewButton} onClick={handleAddReview}>

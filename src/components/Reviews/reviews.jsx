@@ -22,7 +22,7 @@ const Reviews = ({ animeId, newReview = null }) => {
             description,
             score,
             created_at,
-            profiles(username)
+            profiles(username,avatar_url)
           `
           )
           .eq("anime_id", animeId)
@@ -44,11 +44,10 @@ const Reviews = ({ animeId, newReview = null }) => {
     if (animeId) {
       fetchReviews();
     }
-  }, [animeId]);
+  }, [animeId, newReview]);
 
   useEffect(() => {
     if (newReview && newReview.anime_id === animeId) {
-      // Aggiungiamo la nuova recensione all'inizio dell'array (dato che le recensioni sono ordinate per data decrescente)
       setReviews((prevReviews) => [newReview, ...prevReviews]);
     }
   }, [newReview, animeId]);
@@ -84,16 +83,24 @@ const Reviews = ({ animeId, newReview = null }) => {
             <div key={review.id} className={styles.reviewCard}>
               <div className={styles.reviewHeader}>
                 <div className={styles.reviewerInfo}>
-                  <span className={styles.reviewerName}>{review.profiles?.username || "Anonimo"}</span>
-                  <span className={styles.reviewDate}>{new Date(review.created_at).toLocaleDateString()}</span>
+                  <span className={styles.reviewerName}>
+                    <img src={review.profiles.avatar_url || "/media/avatarDefault.png"} alt="" /> {review.profiles?.username || "Anonimo"}
+                  </span>
                 </div>
                 <div className={styles.reviewScore}>{renderStars(review.score)}</div>
               </div>
-              {review.description && (
+              {review.description ? (
                 <div className={styles.reviewContent}>
                   <p>{review.description}</p>
                 </div>
+              ) : (
+                <div className={styles.reviewContent}>
+                  <p>Nessun commento...</p>
+                </div>
               )}
+              <div className={styles.reviewDate}>
+                <span>Pubblicata il {new Date(review.created_at).toLocaleDateString()}</span>
+              </div>
             </div>
           ))}
         </div>

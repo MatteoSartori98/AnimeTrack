@@ -46,9 +46,9 @@ export default function LastReleases() {
       </h3>
       <div className={styles.row}>
         {availableEpisodes.slice(startIndex, visibleEpisodes).map((episode) => (
-          <Link
-            // to={`/detail/${episode.entry.mal_id}`}
-            state={{ episode }}
+          <a
+            href={episode.episodes[0].url}
+            target="blank"
             key={episode.entry.mal_id}
             className={styles.card}
             style={{
@@ -62,7 +62,7 @@ export default function LastReleases() {
               <h2 className={styles.animeTitle}>{episode.entry.title.length > 40 ? episode.entry.title.slice(0, 40) + "..." : episode.entry.title}</h2>
               <h2 className="episode-number">{`Episodio ${episode.episodes[0]?.title?.split(" ")[1] || "?"}`}</h2>
             </div>
-          </Link>
+          </a>
         ))}
         <div
           className={styles.navigationButtons}
