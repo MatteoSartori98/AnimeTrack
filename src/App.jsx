@@ -14,12 +14,14 @@ import AuthedRoute from "./guards/AuthedRoute/AuthedRoute.jsx";
 import UnAuthedRoute from "./guards/UnAuthedRoute/UnAuthedRoute.jsx";
 import ReviewsContextProvider from "./context/Reviews/ReviewsContextProvider.jsx";
 import AvatarContextProvider from "./context/Avatar/AvatarContextProvider.jsx";
+import Footer from "./components/Footer/footer.jsx";
 
 function Layout() {
   return (
     <>
       <Navbar />
       <Outlet />
+      <Footer />
     </>
   );
 }

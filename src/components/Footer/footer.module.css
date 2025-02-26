@@ -1,0 +1,72 @@
+.footer {
+  width: 100%;
+  background-color: #1c2125;
+  color: white;
+  margin-top: 60px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 26px 0;
+}
+
+.container {
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.links {
+  display: flex;
+  gap: 20px;
+}
+
+.link {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: #3b82f6;
+  transform: translateY(-1px);
+}
+
+.signature {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+.heart {
+  color: #ff0000;
+  display: inline-block;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    gap: 10px;
+  }
+}
