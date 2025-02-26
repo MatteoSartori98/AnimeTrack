@@ -9,6 +9,8 @@ export default function Popular() {
   const [visibleEpisodes, setVisibleEpisodes] = useState(7);
   const [startIndex, setStartIndex] = useState(0);
   const [remaining, setRemaining] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [slideDirection, setSlideDirection] = useState(null);
 
   const { data, isError, isLoading } = useQuery({
     queryKey: ["popular"],
@@ -27,17 +29,31 @@ export default function Popular() {
   const populars = data?.data || [];
 
   const loadNextEpisodes = () => {
-    setRemaining(remaining - 7);
-    setStartIndex(startIndex + 7);
-    setVisibleEpisodes(visibleEpisodes + 7);
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+    setSlideDirection("right");
+
+    setTimeout(() => {
+      setRemaining(remaining - 7);
+      setStartIndex(startIndex + 7);
+      setVisibleEpisodes(visibleEpisodes + 7);
+      setIsAnimating(false);
+    }, 400);
   };
 
   const loadPrevEpisodes = () => {
-    if (startIndex > 0) {
+    if (isAnimating || startIndex <= 0) return;
+
+    setIsAnimating(true);
+    setSlideDirection("left");
+
+    setTimeout(() => {
       setRemaining(remaining + 7);
       setStartIndex(startIndex - 7);
       setVisibleEpisodes(visibleEpisodes - 7);
-    }
+      setIsAnimating(false);
+    }, 400);
   };
 
   return (
@@ -47,24 +63,29 @@ export default function Popular() {
         Popolari
       </h3>
       <div className={styles.row}>
-        {populars.slice(startIndex, visibleEpisodes).map((episode) => (
-          <Link
-            to={`/detail/${episode.mal_id}`}
-            state={{ episode }}
-            key={episode.mal_id}
-            className={styles.card}
-            style={{
-              backgroundImage: `url(${episode.images.jpg.large_image_url})`,
-              backgroundPosition: "center",
-              backgroundSize: "cover",
-              backgroundRepeat: "no-repeat",
-            }}
-          >
-            <div className={styles.cardBody}>
-              <h2 className={styles.animeTitle}>{episode.title.length > 40 ? episode.title.slice(0, 40) + "..." : episode.title}</h2>
-            </div>
-          </Link>
-        ))}
+        <div
+          className={`${styles.episodesContainer} ${slideDirection === "right" ? styles.slideRight : ""} ${slideDirection === "left" ? styles.slideLeft : ""}`}
+          onAnimationEnd={() => setSlideDirection(null)}
+        >
+          {populars.slice(startIndex, visibleEpisodes).map((episode) => (
+            <Link
+              to={`/detail/${episode.mal_id}`}
+              state={{ episode }}
+              key={episode.mal_id}
+              className={styles.card}
+              style={{
+                backgroundImage: `url(${episode.images.jpg.large_image_url})`,
+                backgroundPosition: "center",
+                backgroundSize: "cover",
+                backgroundRepeat: "no-repeat",
+              }}
+            >
+              <div className={styles.cardBody}>
+                <h2 className={styles.animeTitle}>{episode.title.length > 40 ? episode.title.slice(0, 40) + "..." : episode.title}</h2>
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
       <div
         className={styles.navigationButtons}
@@ -73,13 +94,13 @@ export default function Popular() {
         }}
       >
         {startIndex > 0 && (
-          <button className={styles.showMoreBtn} style={{ marginLeft: 10 }} onClick={loadPrevEpisodes}>
+          <button className={styles.showMoreBtn} style={{ marginLeft: 10 }} onClick={loadPrevEpisodes} disabled={isAnimating}>
             <ArrowLeft />
             Indietro
           </button>
         )}
         {startIndex + 6 < populars.length && remaining >= 6 ? (
-          <button className={styles.showMoreBtn} style={{ marginRight: 10 }} onClick={loadNextEpisodes}>
+          <button className={styles.showMoreBtn} style={{ marginRight: 10 }} onClick={loadNextEpisodes} disabled={isAnimating}>
             Avanti
             <ArrowRight />
           </button>

@@ -40,6 +40,17 @@ h2 {
   justify-content: space-evenly;
   flex-wrap: wrap;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.episodesContainer {
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  align-items: center;
+  transition: transform 0.4s ease-in-out;
 }
 
 .card {
@@ -48,6 +59,7 @@ h2 {
   height: 250px;
   margin: 4px 4px 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .cardBody {
@@ -77,7 +89,7 @@ h2 {
   border: 0;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .showMoreBtn > :nth-child(1) {
@@ -90,8 +102,48 @@ h2 {
   background: linear-gradient(135deg, #3b83f6de, #8a5cf6e7);
 }
 
+.showMoreBtn:active {
+  transform: scale(0.95);
+}
+
 .justify {
   display: flex;
   align-items: center;
   justify-content: end !important;
+}
+
+.slideRight {
+  animation: slideRightAnimation 0.4s ease-in-out;
+}
+
+.slideLeft {
+  animation: slideLeftAnimation 0.4s ease-in-out;
+}
+
+@keyframes slideRightAnimation {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes slideLeftAnimation {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
 }
