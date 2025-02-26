@@ -3,8 +3,6 @@
   flex-direction: column;
   height: max-content;
   width: 100%;
-  max-width: 270.02px;
-  margin: 0 auto;
   border-radius: 6px;
   background-color: #1c2125;
   color: white;
@@ -176,4 +174,16 @@ button {
 
 .messagesArea::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+.chatContent {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.chatContent.open {
+  max-height: 500px;
+  opacity: 1;
 }

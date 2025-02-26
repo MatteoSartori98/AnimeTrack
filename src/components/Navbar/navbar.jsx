@@ -5,6 +5,7 @@ import { createSearchParams, Link, useLocation, useNavigate } from "react-router
 import supabase from "../../supabase/client";
 import SessionContext from "../../context/Session/SessionContext";
 import AvatarContext from "../../context/Avatar/AvatarContext";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function Navbar() {
   const [searchInputValue, setSearchInputValue] = useState("");
@@ -81,72 +82,84 @@ export default function Navbar() {
 
   async function signOut() {
     setIsDropdownOpen(false);
+    toast.success("Logout avvenuto con successo!");
     await supabase.auth.signOut();
   }
 
   return (
-    <nav className={styles.navbar}>
-      <div className={styles.navbarContainer}>
-        <h1 className={styles.logo}>
-          <Link to="/">
-            <span style={{ color: "white" }}>Anime</span>
-            <span className={styles.logoAccent}>Track</span>
-          </Link>
-        </h1>
-        <div className={styles.navbarControls}>
-          {location.pathname !== "/search" && (
-            <div className={`${styles.searchContainer} ${isSearchFocused ? "focused" : ""}`}>
-              <input
-                type="text"
-                placeholder="Cerca anime..."
-                value={searchInputValue}
-                onFocus={() => setIsSearchFocused(true)}
-                onBlur={() => setIsSearchFocused(false)}
-                onKeyDown={handleKey}
-                onChange={(event) => setSearchInputValue(event.target.value)}
-                className={styles.searchInput}
-              />
-              <button className={styles.searchButton} onClick={handleSearch}>
-                <Search className={styles.searchIcon} />
-              </button>
-            </div>
-          )}
-          <div className={styles.navControls}>
-            <Link to="/search" className={styles.navButton}>
-              <BookOpen height={28} width={28} />
+    <>
+      <nav className={styles.navbar}>
+        <div className={styles.navbarContainer}>
+          <h1 className={styles.logo}>
+            <Link to="/">
+              <span style={{ color: "white" }}>Anime</span>
+              <span className={styles.logoAccent}>Track</span>
             </Link>
+          </h1>
+          <div className={styles.navbarControls}>
+            {location.pathname !== "/search" && (
+              <div className={`${styles.searchContainer} ${isSearchFocused ? "focused" : ""}`}>
+                <input
+                  type="text"
+                  placeholder="Cerca anime..."
+                  value={searchInputValue}
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  onKeyDown={handleKey}
+                  onChange={(event) => setSearchInputValue(event.target.value)}
+                  className={styles.searchInput}
+                />
+                <button className={styles.searchButton} onClick={handleSearch}>
+                  <Search className={styles.searchIcon} />
+                </button>
+              </div>
+            )}
+            <div className={styles.navControls}>
+              <Link to="/search" className={styles.navButton}>
+                <BookOpen height={28} width={28} />
+              </Link>
 
-            <div className={styles.navDivider}></div>
+              <div className={styles.navDivider}></div>
 
-            <div className={session && styles.userAvatar}>
-              {!session ? (
-                <div>
-                  <Link to="/login" className={styles.login}>
-                    Login
-                  </Link>
-                </div>
-              ) : (
-                <>
-                  <div className={styles.avatar} onClick={(event) => handleDropdown(event)}>
-                    <img src={avatarUrl || "/media/avatarDefault.png"} alt="Profile avatar" />
-                  </div>
-                  <div ref={dropdownRef} className={`${styles.dropdownContainer} ${isDropdownOpen ? styles.show : null}`}>
-                    <Link to="/profile" className={styles.profile}>
-                      Profilo
+              <div className={session && styles.userAvatar}>
+                {!session ? (
+                  <div>
+                    <Link to="/login" className={styles.login}>
+                      Login
                     </Link>
-                    <hr style={{ marginBottom: "6px", marginTop: "6px" }} />
-                    <div>
-                      <button style={{ display: "flex" }} onClick={signOut}>
-                        Logout
-                      </button>
-                    </div>
                   </div>
-                </>
-              )}
+                ) : (
+                  <>
+                    <div className={styles.avatar} onClick={(event) => handleDropdown(event)}>
+                      <img src={avatarUrl || "/media/avatarDefault.png"} alt="Profile avatar" />
+                    </div>
+                    <div ref={dropdownRef} className={`${styles.dropdownContainer} ${isDropdownOpen ? styles.show : null}`}>
+                      <Link to="/profile" className={styles.profile}>
+                        Profilo
+                      </Link>
+                      <hr style={{ marginBottom: "6px", marginTop: "6px" }} />
+                      <div>
+                        <button style={{ display: "flex" }} onClick={signOut}>
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+      <Toaster
+        containerStyle={{
+          top: 85,
+          right: 0,
+        }}
+        position="bottom-center"
+        reverseOrder={false}
+        style={{ marginTop: "50px" }}
+      />
+    </>
   );
 }

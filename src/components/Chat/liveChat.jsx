@@ -88,8 +88,14 @@ export default function LiveChat({ animeID }) {
 
   return (
     <div className={styles.chatContainer}>
-      <button onClick={() => handleClick()}>
-        <div className={styles.chatHeader} style={{ backgroundColor: isOpened ? "#242a2f" : "#1c2125", borderBottom: isOpened ? "1px solid rgba(255, 255, 255, 0.1)" : "0px" }}>
+      <button onClick={handleClick}>
+        <div
+          className={styles.chatHeader}
+          style={{
+            backgroundColor: isOpened ? "#242a2f" : "#1c2125",
+            borderBottom: isOpened ? "1px solid rgba(255, 255, 255, 0.1)" : "0px",
+          }}
+        >
           <div className={styles.headerContent}>
             <h3 className={styles.roomTitle}>Chat Live</h3>
             <p className={styles.onlineStatus}>1 online</p>
@@ -97,50 +103,49 @@ export default function LiveChat({ animeID }) {
           {isOpened ? <ChevronUp /> : <ChevronDown />}
         </div>
       </button>
-      {isOpened && (
-        <>
-          {messages.length > 0 ? (
-            <div className={styles.messagesArea} ref={messageRef}>
-              {messages.map((message) => (
-                <div key={message.id} className={styles.messageItem}>
-                  <img src={message.profiles.avatar_url} alt={`${message.profile_username} avatar`} className={styles.avatar} />
-                  <div className={styles.messageContent}>
-                    <div className={styles.messageHeader}>
-                      <span className={styles.username}>{message.profile_username}</span>
-                    </div>
-                    <p className={styles.messageText}>{message.content}</p>
-                    <div className={styles.timestamp}>{formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: it })}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={styles.messagesArea} ref={messageRef}>
+
+      <div className={`${styles.chatContent} ${isOpened ? styles.open : ""}`}>
+        {messages.length > 0 ? (
+          <div className={styles.messagesArea} ref={messageRef}>
+            {messages.map((message) => (
               <div key={message.id} className={styles.messageItem}>
+                <img src={message.profiles.avatar_url} alt={`${message.profile_username} avatar`} className={styles.avatar} />
                 <div className={styles.messageContent}>
-                  <p className={styles.messageText}>Non ci sono messaggi...</p>
+                  <div className={styles.messageHeader}>
+                    <span className={styles.username}>{message.profile_username}</span>
+                  </div>
+                  <p className={styles.messageText}>{message.content}</p>
+                  <div className={styles.timestamp}>{formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: it })}</div>
                 </div>
               </div>
-            </div>
-          )}
-
-          <div className={styles.inputArea}>
-            <div className={styles.inputContainer}>
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder="Scrivi messaggio..."
-                className={styles.messageInput}
-              />
-              <button onClick={(event) => handleSendMessage(event)} className={styles.sendButton}>
-                <SendHorizontal height={20} width={20} />
-              </button>
+            ))}
+          </div>
+        ) : (
+          <div className={styles.messagesArea} ref={messageRef}>
+            <div className={styles.messageItem}>
+              <div className={styles.messageContent}>
+                <p className={styles.messageText}>Non ci sono messaggi...</p>
+              </div>
             </div>
           </div>
-        </>
-      )}
+        )}
+
+        <div className={styles.inputArea}>
+          <div className={styles.inputContainer}>
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Scrivi messaggio..."
+              className={styles.messageInput}
+            />
+            <button onClick={(event) => handleSendMessage(event)} className={styles.sendButton}>
+              <SendHorizontal height={20} width={20} />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -71,7 +71,7 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
           {isDropdownOpen && (
             <div className={styles.filtersBox}>
               {genres.map((genre) => (
-                <div key={genre.mal_id} className={styles.checkboxItem}>
+                <div key={genre.mal_id} className={styles.checkboxItem} style={{}}>
                   <input
                     type="checkbox"
                     value={genre.name}
@@ -79,7 +79,7 @@ export default function Filter({ initialSearchQuery, onFilterSubmit, selectedFil
                     id={genre.mal_id}
                     checked={actualFiltersIds.some((filter) => filter === genre.mal_id)}
                   />
-                  <label style={{ cursor: "pointer" }} htmlFor={genre.mal_id}>
+                  <label style={{ cursor: "pointer", width: "100%", margin: "-8px -25px", padding: "8px 25px" }} htmlFor={genre.mal_id}>
                     {genre.name}
                   </label>
                 </div>
