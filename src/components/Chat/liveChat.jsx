@@ -98,20 +98,30 @@ export default function LiveChat({ animeID }) {
       </button>
       {isOpened && (
         <>
-          <div className={styles.messagesArea} ref={messageRef}>
-            {messages.map((message) => (
-              <div key={message.id} className={styles.messageItem}>
-                <img src={message.profiles.avatar_url} alt={`${message.profile_username} avatar`} className={styles.avatar} />
-                <div className={styles.messageContent}>
-                  <div className={styles.messageHeader}>
-                    <span className={styles.username}>{message.profile_username}</span>
+          {messages.length > 0 ? (
+            <div className={styles.messagesArea} ref={messageRef}>
+              {messages.map((message) => (
+                <div key={message.id} className={styles.messageItem}>
+                  <img src={message.profiles.avatar_url} alt={`${message.profile_username} avatar`} className={styles.avatar} />
+                  <div className={styles.messageContent}>
+                    <div className={styles.messageHeader}>
+                      <span className={styles.username}>{message.profile_username}</span>
+                    </div>
+                    <p className={styles.messageText}>{message.content}</p>
+                    <div className={styles.timestamp}>{formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: it })}</div>
                   </div>
-                  <p className={styles.messageText}>{message.content}</p>
-                  <div className={styles.timestamp}>{formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: it })}</div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className={styles.messagesArea} ref={messageRef}>
+              <div key={message.id} className={styles.messageItem}>
+                <div className={styles.messageContent}>
+                  <p className={styles.messageText}>Non ci sono messaggi...</p>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
 
           <div className={styles.inputArea}>
             <div className={styles.inputContainer}>
