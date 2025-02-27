@@ -9,23 +9,31 @@
   position: relative;
   z-index: 10;
   gap: 20px;
-  h1 {
-    color: red;
-  }
+  padding: 0 16px;
 }
+
+.container h1 {
+  color: red;
+}
+
 .errorContainer {
   display: flex;
   justify-content: center;
   align-items: center;
-  img {
-    width: 600px;
-    margin-top: 100px;
-  }
 }
+
+.errorContainer img {
+  width: 600px;
+  margin-top: 100px;
+  max-width: 100%;
+}
+
 .loadingContainer {
   color: white;
   font-size: 20px;
+  text-align: center;
 }
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -33,6 +41,7 @@
   margin-top: 20px;
   gap: 10px;
   margin-bottom: 40px;
+  flex-wrap: wrap;
 }
 
 .pagination button {
@@ -54,4 +63,56 @@
   font-size: 16px;
   color: white;
   font-weight: bold;
+}
+
+/* Mobile and tablet responsive styles */
+@media (max-width: 768px) {
+  .container {
+    gap: 15px;
+  }
+
+  .errorContainer img {
+    margin-top: 60px;
+    width: 450px;
+  }
+
+  .pagination {
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+
+  .pagination button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .pagination span {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 8px;
+    gap: 10px;
+  }
+
+  .errorContainer img {
+    margin-top: 40px;
+    width: 320px;
+  }
+
+  .loadingContainer {
+    font-size: 18px;
+  }
+
+  .pagination {
+    gap: 5px;
+    margin-bottom: 20px;
+  }
+
+  .pagination button {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
 }

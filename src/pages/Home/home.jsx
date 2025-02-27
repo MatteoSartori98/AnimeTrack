@@ -7,8 +7,8 @@ export default function Home() {
   return (
     <div style={{ marginTop: "50px" }} className={styles.container}>
       <Hero />
-      <LastReleases />
       <Popular />
+      <LastReleases />
     </div>
   );
 }

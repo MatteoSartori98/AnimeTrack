@@ -73,3 +73,64 @@ section {
 img {
   border-radius: 0 !important;
 }
+
+/* Media queries for hero.module.css */
+@media (max-width: 768px) {
+  :global(.swiper) {
+    max-height: 300px;
+  }
+
+  :global(.swiper-slide) {
+    height: 300px;
+  }
+
+  :global(.swiper-slide) img {
+    height: 300px;
+  }
+
+  :global(.swiper-slide) h5 {
+    font-size: 20px;
+  }
+
+  .callToAction {
+    height: 48px;
+    font-size: 17px;
+  }
+
+  .heroContainer {
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :global(.swiper) {
+    max-height: 220px;
+  }
+
+  :global(.swiper-slide) {
+    height: 220px;
+  }
+
+  :global(.swiper-slide) img {
+    height: 220px;
+  }
+
+  :global(.swiper-slide) h5 {
+    font-size: 16px;
+    padding: 8px 0;
+  }
+
+  .callToAction {
+    padding: 20px;
+    text-align: center;
+    height: 54px;
+    font-size: 16px;
+  }
+  .episodeContainer {
+    flex-wrap: nowrap;
+  }
+  .heroContainer {
+    gap: 1.5rem;
+    padding: 0 8px;
+  }
+}

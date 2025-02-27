@@ -66,10 +66,32 @@ export default function Detail() {
   const [description, setDescription] = useState("");
   const [score, setScore] = useState(1);
   const [newReview, setNewReview] = useState(null);
+  const [slidesPerView, setSlidesPerView] = useState(7);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1200) {
+        setSlidesPerView(7);
+      } else if (window.innerWidth >= 992) {
+        setSlidesPerView(5);
+      } else if (window.innerWidth >= 768) {
+        setSlidesPerView(3);
+      } else {
+        setSlidesPerView(2);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   function isAlreadyFavourite() {
     return favourites.find((el) => el.anime_id === episode.mal_id);
   }
+
   function isAlreadyReviewed() {
     return Array.isArray(review) && review.find((el) => el.anime_id === episode.mal_id);
   }
@@ -227,7 +249,7 @@ export default function Detail() {
             <div className={styles.imgBox}>
               <img className={styles.img} src={episode.images.jpg.large_image_url} alt={episode.title} />
             </div>
-            <div className={styles.trailerBox}>
+            <div className={styles.trailerBox} style={{}}>
               <a href={episode.trailer.url} target="blank" className={styles.trailer}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -420,8 +442,14 @@ export default function Detail() {
               autoplay={{ delay: 4000, disableOnInteraction: false }}
               modules={[Navigation, Autoplay]}
               className={styles.swiper}
-              slidesPerView={recommended.length >= 7 ? 7 : recommended.length}
-              style={{ marginLeft: "0" }}
+              slidesPerView={recommended.length >= slidesPerView ? slidesPerView : recommended.length}
+              spaceBetween={10}
+              breakpoints={{
+                320: { slidesPerView: 2, spaceBetween: 10 },
+                640: { slidesPerView: 3, spaceBetween: 10 },
+                992: { slidesPerView: 5, spaceBetween: 10 },
+                1200: { slidesPerView: 7, spaceBetween: 10 },
+              }}
             >
               {recommended.map((el) => (
                 <SwiperSlide key={el.entry.mal_id}>

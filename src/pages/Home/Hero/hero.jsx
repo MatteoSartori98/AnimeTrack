@@ -4,7 +4,7 @@ import "swiper/css/navigation";
 import "swiper/css/autoplay";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay } from "swiper/modules";
-import { BellPlus } from "lucide-react";
+import { BellPlus, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { Link } from "react-router";
 
 export default function Hero() {
@@ -13,8 +13,9 @@ export default function Hero() {
       <div className={styles.heroContainer}>
         <Link to="/search" style={{ display: "flex", alignItems: "center" }}>
           <button className={styles.callToAction}>
-            <BellPlus height={22} width={22} style={{ marginRight: "5px" }} />
-            <span>Cerca e aggiungi i tuoi anime preferiti e tieni traccia dei progressi !</span>
+            <ChevronsRight />
+            <span>Cerca e aggiungi i tuoi anime preferiti clicca qui!</span>
+            <ChevronsLeft />
           </button>
         </Link>
         <Swiper navigation={true} autoplay={{ delay: 3000, disableOnInteraction: false }} modules={[Navigation, Autoplay]} className={styles.swiper}>

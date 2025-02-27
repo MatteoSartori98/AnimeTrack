@@ -5,6 +5,7 @@
   z-index: 50;
   height: 80px;
   padding: 0 20px;
+  width: 100%;
 }
 
 .navbarContainer {
@@ -152,41 +153,40 @@ h1 {
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: visibility 0.2s ease, max-height 0.3s ease;
   overflow: hidden;
+}
 
-  .profile {
-    padding: 5px 10px 5px 2px;
-    border-radius: 2px;
-    transition: none;
-    width: 100%;
-    color: white;
-  }
+.dropdownContainer .profile {
+  padding: 5px 10px 5px 2px;
+  border-radius: 2px;
+  transition: none;
+  width: 100%;
+  color: white;
+}
 
-  .profile:hover {
-    background-color: #2e353b;
-    transform: scale(0.98);
-    transition: transform 0.3s, background-color 0.3s;
-  }
+.dropdownContainer .profile:hover {
+  background-color: #2e353b;
+  transform: scale(0.98);
+  transition: transform 0.3s, background-color 0.3s;
+}
 
-  button {
-    width: 100%;
-    padding: 5px 10px 5px 2px;
-    background: none;
-    color: white;
-    border: 0;
-    border-radius: 2px;
-    transition: 0.3s;
-    font-size: 16px;
-    text-align: start;
-    cursor: pointer;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  }
+.dropdownContainer button {
+  width: 100%;
+  padding: 5px 10px 5px 2px;
+  background: none;
+  color: white;
+  border: 0;
+  border-radius: 2px;
+  transition: 0.3s;
+  font-size: 16px;
+  text-align: start;
+  cursor: pointer;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
-  button:hover {
-    background-color: #2e353b;
-
-    transform: scale(0.98);
-    cursor: pointer;
-  }
+.dropdownContainer button:hover {
+  background-color: #2e353b;
+  transform: scale(0.98);
+  cursor: pointer;
 }
 
 .show {
@@ -211,10 +211,79 @@ h1 {
   z-index: 11;
   width: 40px;
   height: 40px;
-  img {
-    width: 40px;
-    height: 40px;
-    border-radius: 9999px !important;
-    border: 2px solid #3b82f6;
+}
+
+.avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 9999px !important;
+  border: 2px solid #3b82f6;
+}
+
+/* Mobile and tablet responsive styles */
+@media (max-width: 1024px) {
+  .searchInput {
+    width: 20rem;
+  }
+
+  .searchContainer.focused .searchInput {
+    width: 16rem;
+  }
+
+  .navbarControls {
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .searchInput {
+    width: 12rem;
+  }
+
+  .searchContainer.focused .searchInput {
+    width: 10rem;
+  }
+
+  .navbarControls {
+    gap: 0.5rem;
+  }
+
+  .navDivider {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar {
+    height: auto;
+    padding: 0 10px;
+  }
+
+  .navbarContainer {
+    flex-direction: column;
+    padding: 0.75rem 0;
+    gap: 1rem;
+  }
+
+  .searchInput {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .searchContainer.focused .searchInput {
+    width: 100%;
+  }
+
+  .navbarControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .navControls {
+    gap: 1rem;
+  }
+
+  .searchContainer {
+    width: 100%;
   }
 }

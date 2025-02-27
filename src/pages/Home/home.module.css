@@ -6,4 +6,18 @@
   flex-direction: column;
   justify-content: center;
   margin: 0 auto;
+  padding: 0 15px; /* Added padding for mobile devices */
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 8px;
+  }
 }

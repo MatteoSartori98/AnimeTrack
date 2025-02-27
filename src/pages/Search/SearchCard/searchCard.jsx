@@ -123,10 +123,7 @@ export default function SearchCard({ anime, onGenreClick }) {
                 anime.synopsis?.length > 500 ? (
                   <>
                     <span className={styles.textOverflow}>{anime.synopsis}</span>
-                    <button
-                      style={{ background: "none", color: "#3b82f6", border: "0", fontSize: "15px", fontWeight: "bold", cursor: "pointer" }}
-                      onClick={handleClick}
-                    >
+                    <button style={{ background: "none", color: "#3b82f6", border: "0", fontSize: "15px", fontWeight: "bold", cursor: "pointer" }} onClick={handleClick}>
                       leggi di più
                     </button>
                   </>
@@ -136,10 +133,7 @@ export default function SearchCard({ anime, onGenreClick }) {
               ) : (
                 <>
                   {anime.synopsis}
-                  <button
-                    style={{ background: "none", color: "#3b82f6", border: "0", fontSize: "15px", fontWeight: "bold", cursor: "pointer" }}
-                    onClick={handleClick}
-                  >
+                  <button style={{ background: "none", color: "#3b82f6", border: "0", fontSize: "15px", fontWeight: "bold", cursor: "pointer" }} onClick={handleClick}>
                     nascondi
                   </button>
                 </>
@@ -153,7 +147,7 @@ export default function SearchCard({ anime, onGenreClick }) {
               </button>
             ))}
           </div>
-          <div style={{ display: "flex" }}>
+          <div className={styles.infoDuration} style={{ display: "flex" }}>
             <div style={{ marginRight: "20px" }}>{anime.episodes === null ? "Unknown" : anime.episodes} episodes </div>
             <div>{anime.duration.split(" ").slice(0, 2)} duration </div>
           </div>

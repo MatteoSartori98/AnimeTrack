@@ -9,6 +9,7 @@
   z-index: 1;
   position: relative;
   gap: 20px;
+  padding: 0 16px;
 }
 
 .header {
@@ -115,6 +116,7 @@
   padding: 25px;
   background-color: #1c2125;
   z-index: 9999;
+  max-width: 90vw;
 
   .imageButton {
     background: transparent;
@@ -129,9 +131,9 @@
   img {
     height: 85px;
     width: 85px;
-
     border-radius: 9999px !important;
   }
+
   .selected {
     border: 3px solid rgb(3, 196, 3);
   }
@@ -152,7 +154,8 @@
 }
 
 .bioTextarea {
-  width: 500px;
+  width: 100%;
+  max-width: 500px;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -283,18 +286,6 @@
   color: #ef4444;
 }
 
-@media (max-width: 768px) {
-  .table th,
-  .table td {
-    padding: 12px;
-  }
-
-  .coverImage {
-    width: 50px;
-    height: 70px;
-  }
-}
-
 .reviewDescription {
   max-width: 200px;
   overflow: hidden;
@@ -311,4 +302,122 @@
 .reviews {
   background: #1c2125;
   border-radius: 6px;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .container {
+    margin-top: 100px;
+  }
+
+  .header {
+    min-height: 450px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    margin-top: 80px;
+    gap: 15px;
+  }
+
+  .header {
+    min-height: 400px;
+  }
+
+  .headerBody {
+    margin-top: 220px;
+    padding: 16px 20px;
+  }
+
+  .avatar {
+    height: 120px;
+    width: 120px;
+    top: 80px;
+    left: 20px;
+  }
+
+  .edit {
+    top: 120px;
+    font-size: 14px;
+  }
+
+  .table th,
+  .table td {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+
+  .coverImage {
+    width: 60px;
+    height: 90px;
+  }
+
+  .coverCell {
+    width: 80px;
+  }
+
+  .reviewDescription {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    margin-top: 60px;
+    gap: 10px;
+  }
+
+  .header {
+    min-height: 380px;
+  }
+
+  .headerBody {
+    margin-top: 190px;
+    padding: 12px 16px;
+    height: auto;
+  }
+
+  .avatar {
+    height: 90px;
+    width: 90px;
+    top: 80px;
+    left: 16px;
+  }
+
+  .edit {
+    top: 100px;
+    right: 10px;
+    padding: 6px 6px 6px 8px;
+    font-size: 12px;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .coverImage {
+    width: 50px;
+    height: 70px;
+  }
+
+  .coverCell {
+    width: 60px;
+  }
+
+  .reviewDescription {
+    max-width: 120px;
+  }
+
+  .bioTextarea {
+    min-height: 100px;
+  }
+
+  .confirmButton,
+  .cancelButton {
+    width: 100px !important;
+    font-size: 14px;
+  }
 }

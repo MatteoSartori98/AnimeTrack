@@ -285,35 +285,27 @@ a {
   margin: 10px;
 }
 
-.bottomBox {
-  .swiper {
-    max-height: 370px;
-    border-radius: 6px;
-    box-shadow: none !important;
-    max-width: 1390px;
+.bottomBox .swiper {
+  max-height: 370px;
+  border-radius: 6px;
+  box-shadow: none !important;
+  max-width: 100%;
+  background-color: transparent;
+}
 
-    border-radius: 6px !important;
-
-    background-color: transparent;
-  }
-
-  .swiper-slide {
-    display: flex !important;
-    justify-content: center;
-    text-align: center;
-    font-size: 18px;
-    background: #fff;
-    display: flex;
-    width: 250px !important;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    align-self: center;
-    background-color: transparent !important;
-    border-radius: 6px !important;
-    box-shadow: none !important;
-  }
-  .swiper-slide {
-    box-shadow: none !important;
-  }
+.bottomBox .swiper-slide {
+  display: flex !important;
+  justify-content: center;
+  text-align: center;
+  font-size: 18px;
+  background: #fff;
+  display: flex;
+  width: auto !important;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  align-self: center;
+  background-color: transparent !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
 }
