@@ -5,10 +5,14 @@ import Popular from "./Popular/popular";
 
 export default function Home() {
   return (
-    <div style={{ marginTop: "50px" }} className={styles.container}>
-      <Hero />
-      <Popular />
-      <LastReleases />
-    </div>
+    <>
+      <div className={styles.background}></div>
+      <div className={styles.backgroundAnime}></div>
+      <div style={{ marginTop: "50px" }} className={styles.container}>
+        <Hero />
+        <Popular />
+        <LastReleases />
+      </div>
+    </>
   );
 }
