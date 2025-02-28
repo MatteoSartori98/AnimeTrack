@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import styles from "./searchResults.module.css";
 import SearchCard from "./SearchCard/searchCard";
@@ -7,10 +7,13 @@ import Filter from "../../components/Filter/filter";
 import { animeApi } from "../../services/api";
 import { useSearchParams } from "react-router";
 import Banner from "../../components/Banner/banner";
+import { ArrowUpToLine } from "lucide-react";
 
 export default function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [page, setPage] = useState(1);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const resultsContainerRef = useRef(null);
 
   const searchQuery = useMemo(() => {
     return searchParams.get("q");
@@ -36,9 +39,23 @@ export default function SearchResults() {
   const results = data?.data || [];
   const totalPages = data?.pagination?.last_visible_page || 1;
 
+  useEffect(() => {
+    if (resultsContainerRef.current) {
+      resultsContainerRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [page]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 300);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   function handleFilterSubmit(searchedString, newFilterIds) {
     setSearchParams({ q: searchedString, g: newFilterIds.join(",") });
-
     setPage(1);
   }
 
@@ -58,10 +75,17 @@ export default function SearchResults() {
     if (page > 1) setPage(page - 1);
   }
 
+  function scrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
   return (
     <>
       <Banner />
-      <div className={styles.container} style={{ marginRight: results.length == 0 ? "auto + 10" : "auto" }}>
+      <div ref={resultsContainerRef} className={styles.container} style={{ marginRight: results.length === 0 ? "auto + 10" : "auto" }}>
         <Filter initialSearchQuery={searchQuery} onFilterSubmit={handleFilterSubmit} selectedFiltersIds={filterIds} />
         {isLoading ? (
           <div className={styles.loadingContainer}>
@@ -101,6 +125,11 @@ export default function SearchResults() {
           style={{ marginTop: "50px" }}
         />
       </div>
+      {showScrollTop && (
+        <button className={styles.scrollTopButton} onClick={scrollToTop} aria-label="Torna all'inizio">
+          <ArrowUpToLine />
+        </button>
+      )}
     </>
   );
 }

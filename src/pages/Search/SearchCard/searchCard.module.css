@@ -132,10 +132,9 @@
 }
 
 .card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-5px) scale(0.998);
 }
 
-/* Mobile and tablet responsive styles */
 @media (max-width: 1024px) {
   .card {
     padding: 8px;

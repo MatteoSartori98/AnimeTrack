@@ -78,7 +78,7 @@ h2 {
 .navigationButtons {
   display: flex;
   margin: 0px 10px 15px;
-  flex-wrap: wrap; /* Added for mobile responsiveness */
+  flex-wrap: wrap;
 }
 
 .showMoreBtn {
@@ -90,7 +90,7 @@ h2 {
   height: 40px;
   font-size: 16px;
   margin-right: 10px;
-  margin-bottom: 10px; /* Added for mobile stacking */
+  margin-bottom: 10px;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
   border: 0;
@@ -117,7 +117,7 @@ h2 {
   display: flex;
   align-items: center;
   justify-content: end !important;
-  flex-wrap: wrap; /* Added for mobile responsiveness */
+  flex-wrap: wrap;
 }
 
 .slideRight {
@@ -156,7 +156,6 @@ h2 {
   }
 }
 
-/* Media queries for popular.module.css */
 @media (max-width: 768px) {
   .container > h3 {
     font-size: 20px;

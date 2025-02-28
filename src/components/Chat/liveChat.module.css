@@ -194,7 +194,6 @@ button {
   opacity: 1;
 }
 
-/* Responsive styles */
 @media (max-width: 992px) {
   .messagesArea {
     max-height: 280px;

@@ -163,6 +163,7 @@ export default function Profile() {
     event.preventDefault();
     setIsModalOpen(true);
     setIsEditing(true);
+    setEditedBio(bio);
   }
 
   function handleCloseModal(event) {
@@ -176,7 +177,7 @@ export default function Profile() {
   function handleCloseReviewModal() {
     setIsReviewModalOpen(false);
     setReviewAnimeId(null);
-    setReviewScore(0);
+    setReviewScore(1);
     setReviewDescription("");
     setReviewAnimeTitle("");
     toast.error("Recensione annullata");
@@ -338,7 +339,7 @@ export default function Profile() {
     return stars;
   }
 
-  function renderStarSelection(score) {
+  function renderStarSelection() {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
@@ -428,10 +429,10 @@ export default function Profile() {
             </div>
             <div className={styles.avatarSection}>
               <h3>Modifica Avatar</h3>
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", width: "540px" }}>
+              <div>
                 {avatars.map((el) => (
                   <button key={el} onClick={() => handleAvatarSelection(el)} className={styles.imageButton}>
-                    <img src={el} className={selectedAvatar === el ? styles.selected : ""} />
+                    <img src={el} className={selectedAvatar === el ? styles.selected : ""} alt="Avatar option" />
                   </button>
                 ))}
               </div>
@@ -441,7 +442,7 @@ export default function Profile() {
               <h3>Modifica Biografia</h3>
               <textarea value={editedBio} onChange={(e) => setEditedBio(e.target.value)} placeholder="Scrivi qualcosa su di te..." rows={4} className={styles.bioTextarea} />
             </div>
-            <div className={styles.callToAction} style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
+            <div className={styles.callToAction}>
               <button className={styles.cancelButton} onClick={handleCloseModal}>
                 Annulla
               </button>
@@ -476,7 +477,7 @@ export default function Profile() {
                 className={styles.bioTextarea}
               />
             </div>
-            <div className={styles.callToAction} style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
+            <div className={styles.callToAction}>
               <button className={styles.cancelButton} onClick={handleCloseReviewModal}>
                 Annulla
               </button>
@@ -496,7 +497,7 @@ export default function Profile() {
             </div>
             <h3>{getConfirmModalTitle()}</h3>
             <p>{getConfirmModalMessage()}</p>
-            <div className={styles.callToAction} style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
+            <div className={styles.callToAction}>
               <button className={styles.cancelButton} onClick={() => setIsConfirmModalOpen(false)}>
                 Annulla
               </button>
@@ -519,22 +520,22 @@ export default function Profile() {
             <UserRoundPen height={25} width={25} />
           </button>
           <div className={styles.headerBody}>
-            <div style={{ display: "flex", gap: "15px", flexDirection: "column" }}>
-              <div style={{ display: "flex", gap: "5px", alignItems: "center", fontSize: "22px" }}>{session.user.user_metadata.username}</div>
-              <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-                <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
+            <div>
+              <div className={styles.username}>{session.user.user_metadata.username}</div>
+              <div className={styles.userInfo}>
+                <div className={styles.infoItem}>
                   <Mail />
                   {session.user.user_metadata.email}
                 </div>
-                <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
+                <div className={styles.infoItem}>
                   <Calendar />
                   Iscritto il {dataFormattata}
                 </div>
               </div>
             </div>
 
-            <div style={{ margin: "30px 0", padding: "5px 0" }}>
-              <p style={{ color: "rgba(255, 255, 255, 0.7)" }}>{bio}</p>
+            <div className={styles.bioContainer}>
+              <p>{bio}</p>
             </div>
           </div>
         </div>
@@ -573,7 +574,7 @@ export default function Profile() {
                             </Link>
                           </td>
                           <td>
-                            <Link style={{ color: "white" }} to={`/detail/${anime.data.mal_id}`}>
+                            <Link className={styles.animeTitle} to={`/detail/${anime.data.mal_id}`}>
                               {anime.data.title}
                             </Link>
                           </td>
@@ -585,7 +586,7 @@ export default function Profile() {
                           </td>
                           <td>{firstInteractionDate}</td>
                           <td>
-                            <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+                            <div className={styles.actionButtons}>
                               <button className={styles.actionButton} onClick={() => openConfirmModal("favourite", anime.data.mal_id, !isFavourite)}>
                                 <Heart fill={isFavourite ? "red" : "none"} color={isFavourite ? "red" : "white"} height={25} width={25} />
                               </button>
@@ -605,7 +606,7 @@ export default function Profile() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan="6" style={{ textAlign: "center", padding: "20px 10px", color: "rgba(255, 255, 255, 0.7)" }}>
+                      <td colSpan="6" className={styles.emptyMessage}>
                         Non ci sono ancora anime nella tua lista...
                       </td>
                     </tr>
@@ -624,7 +625,6 @@ export default function Profile() {
         }}
         position="bottom-center"
         reverseOrder={false}
-        style={{ marginTop: "50px" }}
       />
     </>
   );
