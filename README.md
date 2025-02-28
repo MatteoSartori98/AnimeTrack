@@ -88,4 +88,4 @@ La struttura del progetto è organizzata con:
 
 ## Link del progetto
 
-- Link: https://animetrack-iu8v20xi3-matteosartori98s-projects.vercel.app/
+- Link: https://animetrack.vercel.app/
